@@ -76,6 +76,12 @@ body{
 .stage{position:fixed; inset:0; padding-top:60px}
 .globe-root{position:absolute; inset:0}
 .globe-root[hidden]{display:none}
+/* Globe-first boot (inline script in index.html): show the globe stage + spinner, never the list, until main.js takes over. */
+.globe-first .globe-root[hidden]{display:block}
+.globe-first .list-root{display:none}
+.globe-loading{position:absolute; top:50%; left:50%; width:36px; height:36px; margin:-18px 0 0 -18px; border:3px solid var(--separator, rgba(128,128,128,.25)); border-top-color:var(--accent, #0A84FF); border-radius:50%; animation:globe-spin .8s linear infinite}
+@keyframes globe-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.globe-loading{animation-duration:2.4s}}
 .list-root{position:absolute; top:var(--nav-h, 60px); right:0; bottom:0; left:0; overflow:auto; padding:8px 16px 140px}
 .skeleton{color:var(--text-dim); text-align:center; margin-top:40px}
 

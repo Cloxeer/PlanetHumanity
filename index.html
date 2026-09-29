@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#F5F5F7">
 <meta name="description" content="Project Planet Humanity: a chronological, geographic catalog of peer-reviewed medical breakthroughs.">
 <title>Project Planet Humanity</title>
+<script>
+/* Globe-first boot, decided before first paint so the list never flashes and then swaps to the globe.
+   Mirrors globePolicy() in src/ui/GlobeStage.js: ?view=list, no WebGL, or a slow/saveData link stay list-first (3G law). */
+(function(){try{var q=new URLSearchParams(location.search).get('view'),c=navigator.connection;
+if(q==='list'||!window.WebGLRenderingContext)return;
+if(q!=='globe'&&c&&(c.saveData||/(^|-)2g|3g/.test(c.effectiveType||'')))return;
+document.documentElement.classList.add('globe-first');}catch(e){}})();
+</script>
 <link rel="stylesheet" href="src/styles.css">
 <link rel="modulepreload" href="src/main.js">
 <link rel="modulepreload" href="src/core/SpatialStore.js">

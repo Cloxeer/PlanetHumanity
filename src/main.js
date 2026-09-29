@@ -96,10 +96,14 @@ let feed = null;
 let countryCounts = new Map(); // iso2 -> catalog-wide paper count, computed once the store loads
 let currentView = 'list';
 let userChoseView = false; // never yank the list away from someone who already picked a view
+// Globe-first boot (flag set pre-paint by index.html): the globe stage + spinner is the landing view
+// while globe.gl loads; endGlobeBoot() swaps to the real globe, or back to the list if it can't load.
+let globeBooting = document.documentElement.classList.contains('globe-first');
+let globeSpinner = null;
 
 function setView(view) {
   currentView = view;
-  const showGlobe = view === 'globe' && globeStage;
+  const showGlobe = view === 'globe' && (globeStage || globeBooting);
   globeRoot.hidden = !showGlobe;
   listRoot.hidden = showGlobe;
   btnList.setAttribute('aria-pressed', String(view === 'list'));
@@ -114,6 +118,23 @@ btnGlobe.addEventListener('click', () => {
   userChoseView = true;
   setView('globe');
 });
+
+if (globeBooting) {
+  globeSpinner = Object.assign(document.createElement('div'), { className: 'globe-loading' });
+  globeSpinner.setAttribute('role', 'progressbar');
+  globeSpinner.setAttribute('aria-label', 'Loading globe');
+  globeRoot.append(globeSpinner);
+  setView('globe');
+  document.documentElement.classList.remove('globe-first'); // hidden attrs now carry the state
+}
+
+function endGlobeBoot(ok) {
+  if (!globeBooting) return;
+  globeBooting = false;
+  globeSpinner?.remove();
+  globeSpinner = null;
+  if (!userChoseView) setView(ok ? 'globe' : 'list');
+}
 
 const themeToggle = createThemeToggle(btnTheme, { onChange: (theme) => { globeStage?.setTheme(theme); } });
 ph.ui.theme = themeToggle;
@@ -281,6 +302,7 @@ async function boot() {
     p.className = 'skeleton';
     p.textContent = 'Unable to load the catalog right now. Please try again later.';
     listRoot.appendChild(p);
+    endGlobeBoot(false); // show the error message instead of an endless globe spinner
     resolveReady();
     return;
   }
@@ -336,17 +358,21 @@ function enhanceGlobe(store, engine) {
     if (policy === 'off') {
       btnGlobe.setAttribute('aria-disabled', 'true');
       btnGlobe.title = '3D globe unavailable on this device';
+      endGlobeBoot(false);
       return;
     }
-    if (policy === 'on-demand') {
+    if (policy === 'on-demand' && !globeBooting) {
       btnGlobe.setAttribute('aria-disabled', 'true');
       pendingOnDemandLoad = () => { pendingOnDemandLoad = null; globeLoadPromise = loadGlobe(store, engine); };
       return;
     }
+    // Globe-first: the globe is the landing view, so load it now rather than at idle.
+    if (globeBooting) { globeLoadPromise = loadGlobe(store, engine); return; }
     const idle = window.requestIdleCallback ?? ((fn) => setTimeout(fn, 200));
     idle(() => { globeLoadPromise = loadGlobe(store, engine); });
   }).catch((err) => {
     console.warn('Planet Humanity: globe module unavailable', err);
+    endGlobeBoot(false);
     btnGlobe.setAttribute('aria-disabled', 'true');
     btnGlobe.title = '3D globe unavailable on this device';
   });
@@ -387,7 +413,8 @@ function loadGlobe(store, engine) {
     ph.ui.card = pointCard;
     btnGlobe.removeAttribute('aria-disabled');
     btnGlobe.removeAttribute('title');
-    if (!userChoseView) setView('globe');
+    if (globeBooting) endGlobeBoot(true);
+    else if (!userChoseView) setView('globe');
     // 3G-law-respecting auto-restore: if the user left layers on last time, bring the layers module
     // in now (LayerManager.restore() itself decides, per layer, whether a slow connection means
     // "paused-slow" instead of actually fetching).
@@ -398,6 +425,7 @@ function loadGlobe(store, engine) {
     return stage;
   }).catch((err) => {
     console.warn('Planet Humanity: globe failed to initialize', err);
+    endGlobeBoot(false);
     btnGlobe.setAttribute('aria-disabled', 'true');
     btnGlobe.title = '3D globe unavailable on this device';
     return null;

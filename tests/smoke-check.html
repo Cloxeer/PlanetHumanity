@@ -11,11 +11,15 @@
   th{color:#A1A1A6;font-weight:500}
   .pass{color:#32D74B}
   .fail{color:#FF453A}
+  h1{display:flex;align-items:center;gap:10px}
+  .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,0.2);border-top-color:#0A84FF;border-radius:50%;animation:spin .8s linear infinite;flex:none}
+  .spinner[hidden]{display:none}
+  @keyframes spin{to{transform:rotate(360deg)}}
   iframe{position:fixed;left:-9999px;top:0;width:1024px;height:768px;border:0}
 </style>
 </head>
 <body>
-<h1 id="status">Running smoke check&hellip;</h1>
+<h1><span id="spinner" class="spinner" role="progressbar" aria-label="Checking"></span><span id="status">Running smoke check&hellip;</span></h1>
 <table id="results"><thead><tr><th>Goal</th><th>Measured</th><th>Status</th></tr></thead><tbody></tbody></table>
 <iframe id="frame-list" src="../index.html?view=list"></iframe>
 <script type="module">
@@ -25,6 +29,9 @@ const results = [];
 
 function record(name, goal, measured, pass) {
   results.push({ name, goal, measured, pass });
+  // Live progress: each finished check appears immediately so a long run never looks blank.
+  appendRow(results[results.length - 1]);
+  document.getElementById('status').textContent = `Running smoke check… ${results.length} done`;
 }
 
 function waitFor(win, pred, timeoutMs = 8000) {
@@ -738,23 +745,26 @@ function trapErrors(win, sink) {
   win.addEventListener('unhandledrejection', e => sink.push(String(e.reason)));
 }
 
+function appendRow(r) {
+  const tr = document.createElement('tr');
+  const g = document.createElement('td'); g.textContent = r.name;
+  const m = document.createElement('td'); m.textContent = `${r.measured} (goal ${r.goal})`;
+  const s = document.createElement('td'); s.textContent = r.pass ? 'PASS' : 'FAIL'; s.className = r.pass ? 'pass' : 'fail';
+  tr.append(g, m, s);
+  document.querySelector('#results tbody').appendChild(tr);
+}
+
 function renderTable(passed) {
-  const tbody = document.querySelector('#results tbody');
-  tbody.replaceChildren();
-  for (const r of results) {
-    const tr = document.createElement('tr');
-    const g = document.createElement('td'); g.textContent = r.name;
-    const m = document.createElement('td'); m.textContent = `${r.measured} (goal ${r.goal})`;
-    const s = document.createElement('td'); s.textContent = r.pass ? 'PASS' : 'FAIL'; s.className = r.pass ? 'pass' : 'fail';
-    tr.append(g, m, s);
-    tbody.appendChild(tr);
-  }
+  document.querySelector('#results tbody').replaceChildren();
+  for (const r of results) appendRow(r);
+  document.getElementById('spinner').hidden = true;
   document.getElementById('status').textContent = passed ? 'All checks passed' : 'Some checks failed';
 }
 
 run().catch((err) => {
   document.title = 'FAIL 1';
   window.__SMOKE__ = { passed: false, results: [{ name: 'runner', goal: 'no throw', measured: String(err), pass: false }] };
+  document.getElementById('spinner').hidden = true;
   document.getElementById('status').textContent = 'Smoke check crashed: ' + err.message;
 });
 </script>
