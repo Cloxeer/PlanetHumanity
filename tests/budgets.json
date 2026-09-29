@@ -1,0 +1,55 @@
+{ "$comment": "/** THIS FILE DOES: Single source of truth for every performance and quality goal the test suites must meet, ROLE: Automation, MAINTAINER NOTE: Tighten numbers freely but never loosen one to make a failing test pass; fix the regression instead. **/",
+  "network": {
+    "profile": "Slow 3G, rural worst case",
+    "downKbps": 400,
+    "rttMs": 400,
+    "connectionSetupRtts": 3,
+    "estimatedListVisibleMsMax": 5000,
+    "estimatedFirstPaintMsMax": 2500
+  },
+  "bytes": {
+    "criticalGzipMax": 40000,
+    "dataGzipMax": 40000,
+    "singleFileGzipMax": 15000,
+    "externalRequestsBeforeListVisible": 0,
+    "globeLocalGzipMax": 80000,
+    "globeTextureMaxBytes": 260000
+  },
+  "engine": {
+    "syntheticEntities": 10000,
+    "indexBuildMsMax": 50,
+    "scrubSamples": 1000,
+    "scrubP95MsMax": 1,
+    "scrubMaxMsMax": 10,
+    "categoryToggleMsMax": 5
+  },
+  "browser": {
+    "listVisibleMsMax": 1000,
+    "scrubHandlerP95MsMax": 10,
+    "autoplayAvgFpsMin": 55,
+    "autoplaySampleMs": 3000,
+    "longTasksDuringScrubMax": 0,
+    "consoleErrorsMax": 0,
+    "themeToggleMsMax": 10,
+    "filterToggleMsMax": 10,
+    "touchTargetMinPx": 44,
+    "globeFpsRatioMin": 0.9,
+    "globeFrameP95MsMax": 4,
+    "globeIdleRendersMax": 0,
+    "compassMaxJumpDegMax": 20
+  },
+  "search": {
+    "syntheticEntities": 10000,
+    "queryP95MsMax": 5
+  },
+  "layers": {
+    "defaultOnMax": 0,
+    "toggleMsMax": 10,
+    "bakeMsMax": 80,
+    "layersLazyGzipMax": 60000
+  },
+  "data": {
+    "minEntitiesPerShard": 5,
+    "requireUniquePmid": true
+  }
+}

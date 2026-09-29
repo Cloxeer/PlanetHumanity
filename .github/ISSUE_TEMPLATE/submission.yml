@@ -1,0 +1,93 @@
+# /** THIS FILE DOES: GitHub issue form for peer-reviewed research submissions, ROLE: Automation, MAINTAINER NOTE: All fields except DOI and PMCID are required **/
+name: Submit research
+description: Add a peer-reviewed paper to the catalog
+title: "[Study] "
+labels:
+  - submission
+body:
+  - type: input
+    id: pmid
+    attributes:
+      label: PubMed ID
+      description: The article's PMID (required)
+      placeholder: "e.g., 12345678"
+    validations:
+      required: true
+  - type: input
+    id: doi
+    attributes:
+      label: DOI
+      placeholder: "e.g., 10.1234/example"
+  - type: input
+    id: pmcid
+    attributes:
+      label: PMCID
+      placeholder: "e.g., PMC1234567"
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Primary research category
+      options:
+        - genomics
+        - oncology
+        - neuroscience
+        - infectious-disease
+        - immunology
+        - cardiometabolic
+        - regenerative-medicine
+        - public-health
+        - ai-in-medicine
+        - rare-disease
+    validations:
+      required: true
+  - type: input
+    id: institution
+    attributes:
+      label: Institution name
+      description: Primary affiliation of corresponding or first author
+    validations:
+      required: true
+  - type: input
+    id: city
+    attributes:
+      label: City
+    validations:
+      required: true
+  - type: input
+    id: country
+    attributes:
+      label: Country (ISO 2-letter code)
+      placeholder: "e.g., US, GB, DE"
+    validations:
+      required: true
+  - type: input
+    id: lat
+    attributes:
+      label: Latitude
+      placeholder: "-90 to 90, 2 decimals"
+    validations:
+      required: true
+  - type: input
+    id: lng
+    attributes:
+      label: Longitude
+      placeholder: "-180 to 180, 2 decimals"
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Plain-language summary
+      description: Original summary in your own words (40–400 characters, never paste abstract)
+      placeholder: "Explain the key finding for a general science audience…"
+    validations:
+      required: true
+  - type: checkboxes
+    id: verified
+    attributes:
+      label: Verification
+      description: Confirm before submitting
+      options:
+        - label: I confirmed this is peer-reviewed and indexed on PubMed
+          required: true

@@ -1,0 +1,91 @@
+/** THIS FILE DOES: Styles for the lazy Wikipedia reference-photo frame, ROLE: UI, MAINTAINER NOTE: Fixed 16:9 aspect-ratio frame avoids layout shift while the image loads; shimmer is opacity-only and disabled under reduced motion. **/
+
+/* Photo on top, credit caption BELOW it (never overlaid): an overlaid caption hid the photo's
+   bottom edge and rounded corners. The 16:9 box on the media plus a reserved caption line keep
+   the frame from shifting while the image loads. */
+.ph-refimage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ph-refimage img,
+.ph-refimage-shimmer {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  border: 0.5px solid var(--hairline);
+  object-fit: cover;
+  background: var(--glass);
+}
+
+.ph-refimage-shimmer {
+  background: linear-gradient(90deg, transparent, var(--hairline), transparent);
+  animation: ph-refimage-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-refimage-shimmer {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+@keyframes ph-refimage-pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.75; }
+}
+
+.ph-refimage-caption {
+  margin: 0;
+  padding: 0 2px;
+  min-height: 1.3em;
+  font-size: 0.6875rem;
+  line-height: 1.3;
+  color: var(--text-dim);
+}
+
+.ph-refimage-caption a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.ph-refimage-caption a:hover,
+.ph-refimage-caption a:focus-visible {
+  text-decoration: underline;
+}
+
+.ph-refimage-gate,
+.ph-refimage-fallback {
+  flex-direction: row;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.ph-refimage-load {
+  border: 0.5px solid var(--hairline);
+  background: var(--glass);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.ph-refimage-fallback a {
+  color: var(--accent);
+  font-size: 0.8125rem;
+  text-decoration: none;
+}
+
+.ph-refimage-fallback a:hover,
+.ph-refimage-fallback a:focus-visible {
+  text-decoration: underline;
+}
+
+.ph-refimage-empty {
+  display: none;
+}

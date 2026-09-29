@@ -1,0 +1,88 @@
+/** THIS FILE DOES: Styling for the Layers sidebar, its rows/filters/trust-badges, the layer item card and the layers nav button, ROLE: UI, MAINTAINER NOTE: Reuses .filter-panel/.filter-backdrop/.switch/.btn-secondary/.icon-btn from styles.css so Layers matches Filters exactly; only layer-specific classes are defined here. Loaded lazily alongside LayerManager/LayersPanel, never in the critical path. **/
+
+.layers-panel .filter-body{padding-bottom:8px}
+
+/* EPIC bonus header card */
+/* Compact row, not a banner: in the phone half-sheet a 120px photo pushed every switch below
+   the fold. The live Earth disc reads fine at 48px. */
+.layer-epic-card{display:flex; align-items:center; gap:10px; margin:0 0 12px; padding:6px; border-radius:12px; background:var(--surface); border:0.5px solid var(--hairline)}
+.layer-epic-card[hidden]{display:none}
+.layer-epic-card img{flex:none; width:48px; height:48px; border-radius:50%; object-fit:cover; background:#000}
+.layer-epic-label{font-size:12px; color:var(--text-dim)}
+/* No dimming behind Layers: the whole point is watching the planet change as you toggle. */
+.layers-backdrop, .layers-backdrop.open{background:transparent}
+
+.layer-group{margin-top:18px}
+.layer-row{background:var(--surface); border:0.5px solid var(--hairline); border-radius:12px; padding:12px; margin-bottom:10px}
+.layer-row-none{background:none; border:0; padding:4px 0 8px; margin-bottom:2px}
+.layer-none-label{display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer}
+.layer-row-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
+.layer-row-labels{flex:1; min-width:0}
+.layer-row-title{font-size:14px; font-weight:600}
+.layer-row-desc{font-size:12px; color:var(--text-dim); margin-top:2px}
+.layer-trust-badge{
+  display:inline-flex; align-items:center; gap:4px; font-size:11px; color:var(--accent); text-decoration:none;
+  margin-top:6px;
+}
+.layer-trust-badge::before{content:"\2713"; display:inline-block; font-size:10px}
+.layer-trust-badge:hover, .layer-trust-badge:focus-visible{text-decoration:underline}
+.layer-radio{width:20px; height:20px; margin:2px 0 0; accent-color:var(--accent); flex:none; cursor:pointer}
+.layer-row-meta{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:8px; font-size:11px; color:var(--text-dim)}
+.layer-row-status{flex:1; min-width:0}
+.layer-row-status-actionable{color:var(--accent); cursor:pointer; text-decoration:underline}
+.layer-row-size{flex:none}
+.layer-row-loading .layer-row-status{position:relative; padding-left:14px}
+.layer-row-loading .layer-row-status::before{
+  content:""; position:absolute; left:0; top:50%; width:9px; height:9px; margin-top:-4.5px;
+  border-radius:50%; border:1.5px solid var(--hairline); border-top-color:var(--accent);
+  animation:layer-spin 0.7s linear infinite;
+}
+.layer-row-error .layer-row-status{color:#FF453A}
+@keyframes layer-spin{to{transform:rotate(360deg)}}
+
+.layer-row-filters{margin-top:10px; padding-top:10px; border-top:0.5px solid var(--hairline); display:flex; flex-direction:column; gap:10px}
+.layer-filter-row{display:flex; align-items:center; gap:8px; font-size:12px}
+.layer-filter-label{color:var(--text-dim); flex:none; min-width:78px}
+.layer-filter-row select, .layer-filter-row input[type="text"]{
+  flex:1; min-width:0; font:inherit; font-size:12px; padding:6px 8px; border-radius:8px;
+  border:0.5px solid var(--hairline); background:var(--elevated); color:var(--text);
+}
+.layer-filter-row input[type="range"]{flex:1; accent-color:var(--accent)}
+.layer-filter-value{flex:none; min-width:24px; text-align:right; color:var(--text-dim)}
+.layer-filter-chips{display:flex; flex-wrap:wrap; gap:6px}
+.layer-chip{
+  appearance:none; border:0.5px solid var(--hairline); background:var(--elevated); color:var(--text-dim);
+  font:inherit; font-size:11px; padding:5px 10px; border-radius:999px; cursor:pointer;
+}
+.layer-chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:#fff}
+
+.layer-sources{margin-top:18px; font-size:12px; color:var(--text-dim)}
+.layer-sources summary{cursor:pointer; color:var(--text); font-weight:500; padding:4px 0}
+.layer-sources ul{list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:6px}
+.layer-sources a{color:var(--accent); text-decoration:none}
+.layer-sources a:hover, .layer-sources a:focus-visible{text-decoration:underline}
+
+/* layer item card (glass card at click point on desktop, bottom sheet on phones) - wider than the
+   base .ph-point-card (300px) since it now carries a rich detail sheet (photos/facts/summary),
+   not just a title+link. See layerdetail.css for the sheet body's own styling. */
+.ph-layer-item-card{width:min(360px, 92vw); max-width:min(360px, 92vw)}
+.layer-item-head{justify-content:flex-start}
+.layer-item-subtitle{margin-top:4px}
+.layer-item-time{color:var(--text-dim); font-size:11px}
+.layer-item-link{text-decoration:none}
+
+@media (max-width:640px){
+  .layers-panel{
+    top:auto; bottom:0; right:0; left:0; height:auto; max-height:80%; width:auto;
+    border-left:0; border-top:0.5px solid var(--hairline); border-radius:16px 16px 0 0;
+    transform:translate3d(0,100%,0);
+  }
+  .layers-panel.open{transform:translate3d(0,0,0)}
+}
+@media (prefers-reduced-motion:reduce){
+  .layers-panel, .layers-backdrop, .layer-row-loading .layer-row-status::before{transition:none; animation:none}
+}
+@media (forced-colors:active){
+  .layers-panel{background:Canvas; border-color:CanvasText}
+  .layer-row{border-color:CanvasText}
+}

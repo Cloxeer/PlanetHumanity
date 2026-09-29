@@ -1,0 +1,61 @@
+{
+ "title": "EONET Event Categories",
+ "categories": [
+  {
+   "id": "drought",
+   "title": "Drought",
+   "link": "https://eonet.gsfc.nasa.gov/api/v3/categories/drought",
+   "description": "Long lasting absence of precipitation affecting agriculture and livestock, and the overall availability of food and water.",
+   "layers": "https://eonet.gsfc.nasa.gov/api/v3/layers/drought"
+  },
+  {
+   "id": "dustHaze",
+   "title": "Dust and Haze",
+   "link": "https://eonet.gsfc.nasa.gov/api/v3/categories/dustHaze",
+   "description": "Related to dust storms, air pollution and other non-volcanic aerosols. Volcano-related plumes shall be included with the originating eruption event.",
+   "layers": "https://eonet.gsfc.nasa.gov/api/v3/layers/dustHaze"
+  },
+  {
+   "id": "earthquakes",
+   "title": "Earthquakes",
+   "link": "https://eonet.gsfc.nasa.gov/api/v3/categories/earthquakes",
+   "description": "Related to all manner of shaking and displacement. Certain aftermath of earthquakes may also be found under landslides and floods.",
+   "layers": "https://eonet.gsfc.nasa.gov/api/v3/layers/earthquakes"
+  },
+  {
+   "id": "floods",
+   "title": "Floods",
+   "link": "https://eonet.gsfc.nasa.gov/api/v3/categories/floods",
+   "description": "Related to aspects of actual flooding--e.g., inundation, water extending beyond river and lake extents.",
+   "layers": "https://eonet.gsfc.nasa.gov/api/v3/layers/floods"
+  },
+  {
+   "id": "landslides",
+   "title": "Landslides",
+   "link": "https://eonet.gsfc.nasa.gov/api/v3/categories/landslides",
+   "description": "Related to landslides and variations thereof: mudslides, avalanche.",
+   "layers": "https://eonet.gsfc.nasa.gov/api/v3/layers/landslides"
+  },
+  {
+   "id": "manmade",
+   "title": "Manmade",
+   "link": "https://eonet.gsfc.nasa.gov/api/v3/categories/manmade",
+   "description": "Events that have been human-induced and are extreme in their extent.",
+   "layers": "https://eonet.gsfc.nasa.gov/api/v3/layers/manmade"
+  },
+  {
+   "id": "seaLakeIce",
+   "title": "Sea and Lake Ice",
+   "link": "https://eonet.gsfc.nasa.gov/api/v3/categories/seaLakeIce",
+   "description": "Related to all ice that resides on oceans and lakes, including sea and lake ice (permanent and seasonal) and icebergs.",
+   "layers": "https://eonet.gsfc.nasa.gov/api/v3/layers/seaLakeIce"
+  },
+  {
+   "id": "severeStorms",
+   "title": "Severe Storms",
+   "link": "https://eonet.gsfc.nasa.gov/api/v3/categories/severeStorms",
+   "description": "Related to the atmospheric aspect of storms (hurricanes, cyclones, tornadoes, etc.). Results of storms may be included under floods, landslides, etc.",
+   "layers": "https://eonet.gsfc.nasa.gov/api/v3/layers/severeStorms"
+  }
+ ]
+}

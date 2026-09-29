@@ -1,0 +1,8 @@
+{ "$comment": "/** THIS FILE DOES: Lists every data shard the app must load, ROLE: Data, MAINTAINER NOTE: Add a new year here the same day its shard file is created; validate-shards.mjs fails the build if the two ever disagree. **/",
+  "schemaVersion": 1,
+  "shards": [
+    "2024/research_pubmed.json",
+    "2025/research_pubmed.json",
+    "2026/research_pubmed.json"
+  ]
+}

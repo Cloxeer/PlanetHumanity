@@ -1,0 +1,762 @@
+<!doctype html><!-- /** THIS FILE DOES: In-browser smoke test that loads the real app in an iframe and checks it against budgets.json browser goals, ROLE: Automation, MAINTAINER NOTE: Runs with file://-friendly relative paths; open via a static server since the app fetches JSON. Tests include timeline end-of-track jitter, thumb bounds, and the country panel via direct window.__PH__.ui.country access rather than fragile globe marker clicks. **/ -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Smoke check</title>
+<style>
+  body{background:#000;color:#F5F5F7;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;padding:24px}
+  h1{font-size:16px}
+  table{border-collapse:collapse;width:100%;max-width:820px;background:rgba(28,28,30,0.65);backdrop-filter:blur(20px);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:8px 12px;border-bottom:0.5px solid rgba(255,255,255,0.12);font-size:13px}
+  th{color:#A1A1A6;font-weight:500}
+  .pass{color:#32D74B}
+  .fail{color:#FF453A}
+  iframe{position:fixed;left:-9999px;top:0;width:1024px;height:768px;border:0}
+</style>
+</head>
+<body>
+<h1 id="status">Running smoke check&hellip;</h1>
+<table id="results"><thead><tr><th>Goal</th><th>Measured</th><th>Status</th></tr></thead><tbody></tbody></table>
+<iframe id="frame-list" src="../index.html?view=list"></iframe>
+<script type="module">
+const budgets = await fetch('./budgets.json').then(r => r.json());
+const goals = budgets.browser;
+const results = [];
+
+function record(name, goal, measured, pass) {
+  results.push({ name, goal, measured, pass });
+}
+
+function waitFor(win, pred, timeoutMs = 8000) {
+  return new Promise((resolve, reject) => {
+    const start = performance.now();
+    (function tick() {
+      let ok = false;
+      try { ok = pred(); } catch { ok = false; }
+      if (ok) return resolve();
+      if (performance.now() - start > timeoutMs) return reject(new Error('timeout waiting for condition'));
+      requestAnimationFrame(tick);
+    })();
+  });
+}
+
+async function run() {
+  // Hidden tabs pause requestAnimationFrame: FPS would be meaningless and waits would hang.
+  if (document.hidden) {
+    document.getElementById('status').textContent = 'Paused: keep this tab visible to run the smoke check…';
+    await new Promise(r => document.addEventListener('visibilitychange', function h() { if (!document.hidden) { document.removeEventListener('visibilitychange', h); r(); } }));
+    document.getElementById('status').textContent = 'Running smoke check…';
+  }
+  const frame = document.getElementById('frame-list');
+  const consoleErrors = [];
+  await frameReady(frame);
+  const win = frame.contentWindow;
+  trapErrors(win, consoleErrors);
+
+  await waitFor(win, () => win.__PH__ && win.__PH__.engine);
+  await win.__PH__.ready;
+
+  // list visible
+  const listMark = win.performance.getEntriesByName('ph:list-visible')[0];
+  const listVisibleMs = listMark ? listMark.startTime : NaN;
+  record('List visible (ms)', goals.listVisibleMsMax, Math.round(listVisibleMs), listMark && listVisibleMs <= goals.listVisibleMsMax);
+
+  // 3G law: nothing leaves our origin before the list is usable
+  const external = win.performance.getEntriesByType('resource')
+    .filter(e => e.startTime <= listVisibleMs && new URL(e.name).origin !== win.location.origin);
+  const extMax = budgets.bytes.externalRequestsBeforeListVisible;
+  record('External requests before list visible', extMax, external.length, external.length <= extMax);
+
+  // table a11y
+  const table = win.document.querySelector('table.feed');
+  const hasCaption = !!table?.querySelector('caption');
+  const ths = table ? Array.from(table.querySelectorAll('th[scope="col"]')) : [];
+  const a11yOk = !!table && hasCaption && ths.length >= 5;
+  record('Table a11y (caption + th[scope])', 'present', a11yOk ? 'present' : 'missing', a11yOk);
+
+  // scrub handler p95 + long tasks: pointerdown/pointermove/pointerup on the timeline track
+  const track = win.document.querySelector('.hud [role="slider"]');
+  const engine = win.__PH__.engine;
+  const domain = engine.domain;
+  const longTaskObserved = [];
+  try {
+    const po = new win.PerformanceObserver((list) => { for (const e of list.getEntries()) longTaskObserved.push(e); });
+    po.observe({ type: 'longtask', buffered: false });
+  } catch { /* longtask unsupported in this browser */ }
+
+  const durations = [];
+  const N = 200;
+  const trackRect = track.getBoundingClientRect();
+  for (let i = 0; i < N; i++) {
+    const frac = i / N;
+    const x = trackRect.left + frac * trackRect.width;
+    const y = trackRect.top + trackRect.height / 2;
+    win.performance.mark('smoke-scrub-a');
+    track.dispatchEvent(new win.PointerEvent('pointerdown', { bubbles: true, clientX: x, clientY: y, pointerId: 1 }));
+    track.dispatchEvent(new win.PointerEvent('pointermove', { bubbles: true, clientX: x + 1, clientY: y, pointerId: 1 }));
+    track.dispatchEvent(new win.PointerEvent('pointerup', { bubbles: true, clientX: x + 1, clientY: y, pointerId: 1 }));
+    win.performance.mark('smoke-scrub-b');
+    win.performance.measure('smoke-scrub', 'smoke-scrub-a', 'smoke-scrub-b');
+    const m = win.performance.getEntriesByName('smoke-scrub').pop();
+    durations.push(m.duration);
+  }
+  durations.sort((a, b) => a - b);
+  const p95 = durations[Math.floor(durations.length * 0.95)] ?? durations[durations.length - 1];
+  record('Scrub handler p95 (ms)', goals.scrubHandlerP95MsMax, +p95.toFixed(3), p95 <= goals.scrubHandlerP95MsMax);
+
+  await new Promise((r) => setTimeout(r, 50));
+  record('Long tasks during scrub', goals.longTasksDuringScrubMax, longTaskObserved.length, longTaskObserved.length <= goals.longTasksDuringScrubMax);
+
+  // Timeline end-of-track stability (jitter regression): drag near the dense end and nudge the
+  // pointer by ±1px repeatedly. Nothing in the HUD may resize as a function of the cursor, and the
+  // pointer->time mapping must be a pure function of x (same x always yields the same value).
+  engine.setCursor(domain.max);
+  const trackRect0 = track.getBoundingClientRect();
+  const jitterX = trackRect0.left + trackRect0.width * 0.995;
+  const jitterY = trackRect0.top + trackRect0.height / 2;
+  const widthSamples = [track.getBoundingClientRect().width];
+  const valueByX = new Map();
+  let jitterConsistentOk = true;
+  track.dispatchEvent(new win.PointerEvent('pointerdown', { bubbles: true, clientX: jitterX, clientY: jitterY, pointerId: 2 }));
+  widthSamples.push(track.getBoundingClientRect().width);
+  for (let i = 0; i < 30; i++) {
+    const x = jitterX + (i % 2 === 0 ? 1 : -1);
+    track.dispatchEvent(new win.PointerEvent('pointermove', { bubbles: true, clientX: x, clientY: jitterY, pointerId: 2 }));
+    widthSamples.push(track.getBoundingClientRect().width);
+    const key = Math.round(x * 100) / 100;
+    const v = track.getAttribute('aria-valuenow');
+    if (valueByX.has(key) && valueByX.get(key) !== v) jitterConsistentOk = false;
+    valueByX.set(key, v);
+  }
+  track.dispatchEvent(new win.PointerEvent('pointerup', { bubbles: true, clientX: jitterX, clientY: jitterY, pointerId: 2 }));
+  const widthStableOk = widthSamples.every((w) => Math.abs(w - widthSamples[0]) < 0.01);
+  record('Timeline end-of-track stability', 'stable width + same value per x', `widthStable=${widthStableOk} consistentPerX=${jitterConsistentOk}`, widthStableOk && jitterConsistentOk);
+
+  // Thumb bounds: the liquid-glass thumb must stay clamped fully inside the track at both ends.
+  const thumbEl = win.document.querySelector('.timeline-thumb');
+  const twoFrames = () => new Promise((r) => win.requestAnimationFrame(() => win.requestAnimationFrame(r)));
+  engine.setCursor(domain.min);
+  await twoFrames();
+  const thumbHome = thumbEl.getBoundingClientRect();
+  const trackHome = track.getBoundingClientRect();
+  const homeOk = thumbHome.left >= trackHome.left - 0.5 && thumbHome.right <= trackHome.right + 0.5;
+  engine.setCursor(domain.max);
+  await twoFrames();
+  const thumbEnd = thumbEl.getBoundingClientRect();
+  const trackEnd = track.getBoundingClientRect();
+  const endOk = thumbEnd.left >= trackEnd.left - 0.5 && thumbEnd.right <= trackEnd.right + 0.5;
+  record('Thumb bounds at Home/End', 'within track ±0.5px', `home=${homeOk} end=${endOk}`, homeOk && endOk);
+
+  // keyboard slider: End/Home/ArrowLeft must change aria-valuenow
+  engine.setCursor(domain.min + Math.round((domain.max - domain.min) / 2));
+  const beforeEnd = track.getAttribute('aria-valuenow');
+  track.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'End', bubbles: true }));
+  const afterEnd = track.getAttribute('aria-valuenow');
+  // ArrowLeft before Home: at the domain start there is no earlier paper to step to.
+  const beforeLeft = afterEnd;
+  track.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+  const afterLeft = track.getAttribute('aria-valuenow');
+  const beforeHome = afterLeft;
+  track.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Home', bubbles: true }));
+  const afterHome = track.getAttribute('aria-valuenow');
+  const keyboardOk = beforeEnd !== afterEnd && beforeHome !== afterHome && beforeLeft !== afterLeft;
+  record('Keyboard slider (End/Home/ArrowLeft change aria-valuenow)', true, keyboardOk, keyboardOk);
+  engine.setCursor(domain.max);
+
+  // theme toggle: handler time budget + <html data-theme> flips then flips back
+  const themeBtn = win.document.getElementById('btn-theme');
+  const htmlEl = win.document.documentElement;
+  const themeBefore = htmlEl.getAttribute('data-theme');
+  win.performance.mark('smoke-theme-a');
+  themeBtn.dispatchEvent(new win.Event('click', { bubbles: true }));
+  win.performance.mark('smoke-theme-b');
+  win.performance.measure('smoke-theme', 'smoke-theme-a', 'smoke-theme-b');
+  const themeMs = win.performance.getEntriesByName('smoke-theme').pop().duration;
+  const themeFlipped = htmlEl.getAttribute('data-theme') !== themeBefore;
+  themeBtn.dispatchEvent(new win.Event('click', { bubbles: true })); // flip back
+  const themeRestored = htmlEl.getAttribute('data-theme') === themeBefore;
+  record('Theme toggle handler (ms)', goals.themeToggleMsMax, +themeMs.toFixed(3), themeMs <= goals.themeToggleMsMax && themeFlipped && themeRestored);
+
+  // filter panel: toggle handler time budget, opens, unchecking a category reduces visible(), Esc closes, focus returns
+  const filtersBtn = win.document.getElementById('btn-filters');
+  const beforeVisible = engine.visible().length;
+  win.performance.mark('smoke-filter-a');
+  filtersBtn.dispatchEvent(new win.Event('click', { bubbles: true }));
+  win.performance.mark('smoke-filter-b');
+  win.performance.measure('smoke-filter', 'smoke-filter-a', 'smoke-filter-b');
+  const filterMs = win.performance.getEntriesByName('smoke-filter').pop().duration;
+  await waitFor(win, () => win.document.querySelector('.filter-panel.open'));
+  const firstCheckbox = win.document.querySelector('.filter-panel input[type="checkbox"]:checked');
+  let filterReducedVisible = false;
+  if (firstCheckbox) {
+    firstCheckbox.checked = false;
+    firstCheckbox.dispatchEvent(new win.Event('change', { bubbles: true }));
+    filterReducedVisible = engine.visible().length < beforeVisible;
+    firstCheckbox.checked = true;
+    firstCheckbox.dispatchEvent(new win.Event('change', { bubbles: true })); // restore
+  }
+  win.document.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  await waitFor(win, () => !win.document.querySelector('.filter-panel.open'));
+  const filterFocusReturned = win.document.activeElement === filtersBtn;
+  record('Filter toggle handler (ms)', goals.filterToggleMsMax, +filterMs.toFixed(3), filterMs <= goals.filterToggleMsMax);
+  record('Filter panel opens/reduces visible()/Esc/focus-return', true, `reduces=${filterReducedVisible} focusReturn=${filterFocusReturned}`, filterReducedVisible && filterFocusReturned);
+
+  // autoplay FPS
+  let frames = 0;
+  let rafId;
+  const countFrame = () => { frames++; rafId = win.requestAnimationFrame(countFrame); };
+  engine.setCursor(domain.min);
+  rafId = win.requestAnimationFrame(countFrame);
+  engine.play();
+  await new Promise((r) => setTimeout(r, goals.autoplaySampleMs));
+  win.cancelAnimationFrame(rafId);
+  engine.pause();
+  const avgFps = frames / (goals.autoplaySampleMs / 1000);
+  record('Autoplay avg FPS', goals.autoplayAvgFpsMin, Math.round(avgFps), avgFps >= goals.autoplayAvgFpsMin);
+  engine.setCursor(domain.max);
+
+  // inspector open/Esc/focus-return
+  const firstRow = win.document.querySelector('table.feed tbody tr');
+  let inspectorOk = false;
+  if (firstRow) {
+    firstRow.focus();
+    firstRow.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await waitFor(win, () => win.document.querySelector('.inspector.open'));
+    const dialog = win.document.querySelector('.inspector[role="dialog"][aria-modal="true"]');
+    win.document.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await waitFor(win, () => !win.document.querySelector('.inspector.open'));
+    const focusReturned = win.document.activeElement === firstRow;
+    inspectorOk = !!dialog && focusReturned;
+  }
+  record('Inspector open/Esc/focus-return', true, inspectorOk, inspectorOk);
+
+  // Country panel: main.js idle-imports CountryPanel independent of the globe,
+  // so it's reachable here via __PH__.ui.country without needing WebGL or the globe.gl CDN.
+  await waitFor(win, () => win.__PH__.ui.country);
+  const countryPanel = win.__PH__.ui.country;
+  const zaCount = win.__PH__.store.all().filter((e) => e.institution?.country === 'ZA').length;
+  countryPanel.open({ iso2: 'ZA', name: 'South Africa' });
+  await waitFor(win, () => win.document.querySelector('.country-panel.open'));
+  const listedZaCount = win.document.querySelectorAll('.country-paper').length;
+  win.document.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  await waitFor(win, () => !win.document.querySelector('.country-panel.open'));
+  const countryClosedOk = !win.document.querySelector('.country-panel.open');
+  const countryCountOk = listedZaCount === zaCount;
+  record('Country panel lists ZA papers and Esc closes', `count=${zaCount}`, `listed=${listedZaCount} closed=${countryClosedOk}`, countryCountOk && countryClosedOk);
+
+  // Range modes (All time / Year / Month): switching modes changes the visible set (Month is always
+  // a subset of Year, since a calendar month sits inside its calendar year), and - like the jitter
+  // regression above - nothing about the HUD's own size may depend on which mode is active.
+  const rangeHudEl = win.document.querySelector('.hud');
+  const rangeWidths = [rangeHudEl.getBoundingClientRect().width];
+  engine.setRange('year');
+  const rangeYearCount = engine.visible().length;
+  rangeWidths.push(rangeHudEl.getBoundingClientRect().width);
+  engine.setRange('month');
+  const rangeMonthCount = engine.visible().length;
+  rangeWidths.push(rangeHudEl.getBoundingClientRect().width);
+  engine.setRange('all');
+  const rangeAllCount = engine.visible().length;
+  rangeWidths.push(rangeHudEl.getBoundingClientRect().width);
+  const rangeSubsetOk = rangeMonthCount <= rangeYearCount;
+  const rangeHudStableOk = rangeWidths.every((w) => Math.abs(w - rangeWidths[0]) < 0.5);
+  record('Range modes change visible() (Month subset of Year) + stable HUD width', 'monotonic + stable width',
+    `all=${rangeAllCount} year=${rangeYearCount} month=${rangeMonthCount} widthStable=${rangeHudStableOk}`,
+    rangeSubsetOk && rangeHudStableOk);
+
+  // Year mode must zoom the track to fill with just that calendar year, not gray out the rest of
+  // the full data domain (the point of this feature). Pick a year strictly inside the domain (both
+  // Jan 1 and Dec 31 inside [domain.min, domain.max]) so engine.setCursor's own clamping can't move
+  // the cursor off the date we asked for; skip (still passes) if the fixture data doesn't span
+  // enough years for one to exist.
+  const minYear = new Date(domain.min).getUTCFullYear();
+  const maxYear = new Date(domain.max).getUTCFullYear();
+  const interiorYear = maxYear - minYear >= 2 ? minYear + 1 : null;
+  let yearFillOk = true, yearFillMeasured = 'skipped (no interior year in fixture domain)';
+  if (interiorYear !== null) {
+    const jan1 = Date.UTC(interiorYear, 0, 1, 0, 0, 0, 0);
+    const dec31 = Date.UTC(interiorYear, 11, 31, 23, 59, 59, 999);
+    if (jan1 >= domain.min && dec31 <= domain.max) {
+      engine.setRange('year');
+      const settleThumb = async () => { await twoFrames(); await new Promise((r) => setTimeout(r, 320)); await twoFrames(); };
+      const thumbW = thumbEl.getBoundingClientRect().width;
+      engine.setCursor(jan1);
+      await settleThumb(); // the thumb glides 220 ms on programmatic moves; measure where it lands
+      const trackAtJan1 = track.getBoundingClientRect();
+      const jan1ThumbRect = thumbEl.getBoundingClientRect();
+      const jan1Center = jan1ThumbRect.left + jan1ThumbRect.width / 2;
+      const leftUsableEdge = trackAtJan1.left + thumbW / 2;
+      const jan1Ok = Math.abs(jan1Center - leftUsableEdge) <= 2;
+      engine.setCursor(dec31);
+      await settleThumb(); // the thumb glides 220 ms on programmatic moves; measure where it lands
+      const trackAtDec31 = track.getBoundingClientRect();
+      const dec31ThumbRect = thumbEl.getBoundingClientRect();
+      const dec31Center = dec31ThumbRect.left + dec31ThumbRect.width / 2;
+      const rightUsableEdge = trackAtDec31.right - thumbW / 2;
+      const dec31Ok = Math.abs(dec31Center - rightUsableEdge) <= 2;
+      yearFillOk = jan1Ok && dec31Ok;
+      yearFillMeasured = `jan1Center=${jan1Center.toFixed(1)} leftEdge=${leftUsableEdge.toFixed(1)} dec31Center=${dec31Center.toFixed(1)} rightEdge=${rightUsableEdge.toFixed(1)}`;
+      engine.setRange('all');
+    }
+  }
+  record('Year mode fills track (Jan 1 / Dec 31 at usable edges)', 'within 2px', yearFillMeasured, yearFillOk);
+  engine.setCursor(domain.max); // restore for subsequent checks
+
+  // Search: open via #btn-search, type "lenacapavir", expect >=2 results and a mark.ph-hl, Esc closes + focus returns.
+  let searchVal = 'skipped', searchPass = true;
+  try {
+    const searchBtn = win.document.getElementById('btn-search');
+    searchBtn.focus();
+    searchBtn.dispatchEvent(new win.Event('click', { bubbles: true }));
+    await waitFor(win, () => win.document.querySelector('#search-root .search-input'), 4000);
+    const input = win.document.querySelector('#search-root .search-input');
+    input.value = 'lenacapavir';
+    input.dispatchEvent(new win.Event('input', { bubbles: true }));
+    await waitFor(win, () => win.document.querySelector('#search-root mark.ph-hl') || win.document.querySelector('#search-root .search-empty:not([hidden])'), 4000);
+    const resultCount = win.document.querySelectorAll('#search-root .search-result, #search-root [role="option"]').length;
+    const markOk = !!win.document.querySelector('#search-root mark.ph-hl');
+    // Snippets come from a per-id index lookup; a broken lookup once left every snippet blank silently.
+    const snippetOk = [...win.document.querySelectorAll('#search-root .search-result-snippet')].some((s) => s.textContent.trim().length > 0);
+    win.document.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await waitFor(win, () => !win.document.querySelector('.search-panel.open'), 3000);
+    const focusReturned = win.document.activeElement === searchBtn;
+    searchVal = `results=${resultCount} mark=${markOk} snippet=${snippetOk} focusReturn=${focusReturned}`;
+    searchPass = resultCount >= 2 && markOk && snippetOk && focusReturned;
+  } catch (e) { searchVal = `error (${e.message})`; searchPass = false; } // search is local: no offline excuse to skip
+  record('Search: open, type "lenacapavir", >=2 results + mark.ph-hl, Esc closes + focus returns', true, searchVal, searchPass);
+
+  // globe enhancement: must render points without throwing. If the CDN is unreachable (offline CI), it's skipped, not failed.
+  // Created only now: same-origin frames share one main thread, so a concurrent globe boot would pollute the long-task check above.
+  const gFrame = Object.assign(document.createElement('iframe'), { src: '../index.html?view=globe' });
+  document.body.append(gFrame);
+  await frameReady(gFrame);
+  const gWin = gFrame.contentWindow;
+  const gErrors = [];
+  trapErrors(gWin, gErrors);
+  let globeState = 'rendered';
+  let markerOk = 'skipped';
+  let poleCountOk = 'skipped';
+  let countryLabelOk = 'skipped';
+  // v4 perf/compass/legend measurements default to a passing 'skipped' state (offline CDN, or
+  // an older GlobeStage without stats()); a real measurement always overwrites both the
+  // value and its pass flag together, so a partial failure below can never leave a stale pass=true.
+  let fpsRatioVal = 'skipped', fpsRatioPass = true;
+  let frameP95Val = 'skipped', frameP95Pass = true;
+  let idleRendersVal = 'skipped', idleRendersPass = true;
+  let compassVal = 'skipped', compassPass = true;
+  let legendVal = 'skipped', legendPass = true;
+  let layersDefaultOnVal = 'skipped', layersDefaultOnPass = true;
+  let layersToggleVal = 'skipped', layersTogglePass = true;
+  let layersFrameP95Val = 'skipped', layersFrameP95Pass = true;
+  let layersBakeVal = 'skipped', layersBakePass = true;
+  let layersOffVal = 'skipped', layersOffPass = true;
+  let layersTrustVal = 'skipped', layersTrustPass = true;
+  try {
+    await waitFor(gWin, () => gWin.__PH__?.engine);
+    await gWin.__PH__.ready;
+    gErrors.push(...gWin.__PH__.metrics.errors); // anything thrown before the trap was attached
+    await waitFor(gWin, () => gWin.document.querySelector('#globe-root canvas') && gWin.Globe, 15000);
+    // exercise the datum path that once crashed on frozen entities
+    gWin.__PH__.engine.setCursor(gWin.__PH__.engine.domain.min);
+    gWin.__PH__.engine.setCursor(gWin.__PH__.engine.domain.max);
+    await new Promise(r => setTimeout(r, 300));
+    await waitFor(gWin, () => gWin.document.querySelector('.ph-marker'), 5000);
+    const marker = gWin.document.querySelector('.ph-marker');
+    // globe.css is injected lazily: give the marker up to 3 s to reach its styled size before measuring.
+    await waitFor(gWin, () => marker.getBoundingClientRect().width >= budgets.browser.touchTargetMinPx, 3000).catch(() => {});
+    const r = marker.getBoundingClientRect();
+    markerOk = r.width >= budgets.browser.touchTargetMinPx && r.height >= budgets.browser.touchTargetMinPx;
+    poleCountOk = gWin.document.querySelectorAll('.ph-pole').length === 2;
+    countryLabelOk = !!gWin.document.querySelector('.ph-country-label');
+
+    const stage = gWin.__PH__.ui.stage;
+
+    // FPS ratio + frame p95: measure the display's idle rAF rate first (an empty loop for 1s),
+    // then drive a continuous rotation (setView 0ms every rAF for 2s) and compare.
+    try {
+      const countRaf = (win, ms) => new Promise((resolve) => {
+        let n = 0; const start = win.performance.now();
+        (function tick() { n++; if (win.performance.now() - start < ms) win.requestAnimationFrame(tick); else resolve(n); })();
+      });
+      const idleFrames = await countRaf(gWin, 1000);
+      let lng = -180, drivenFrames = 0;
+      const drivenStart = gWin.performance.now();
+      await new Promise((resolve) => {
+        (function step() {
+          lng = lng >= 180 ? -180 : lng + 3;
+          stage.setView({ lat: 20, lng, altitude: 2.2 }, 0);
+          drivenFrames++;
+          if (gWin.performance.now() - drivenStart < 2000) gWin.requestAnimationFrame(step); else resolve();
+        })();
+      });
+      const fpsRatio = idleFrames > 0 ? drivenFrames / idleFrames : 0;
+      fpsRatioVal = +fpsRatio.toFixed(2);
+      fpsRatioPass = fpsRatio >= budgets.browser.globeFpsRatioMin;
+
+      const frameP95 = stage.stats?.().frameP95Ms;
+      frameP95Val = typeof frameP95 === 'number' ? +frameP95.toFixed(2) : 'stats() missing';
+      frameP95Pass = typeof frameP95 === 'number' && frameP95 <= budgets.browser.globeFrameP95MsMax;
+    } catch (e) { fpsRatioVal = frameP95Val = `skipped (${e.message})`; fpsRatioPass = frameP95Pass = true; }
+
+    // Idle renders: render-on-demand means stats().renders must stop growing once input stops.
+    try {
+      await new Promise((r) => setTimeout(r, 1500));
+      const before = stage.stats?.().renders;
+      await new Promise((r) => setTimeout(r, 1000));
+      const after = stage.stats?.().renders;
+      if (typeof before === 'number' && typeof after === 'number') {
+        idleRendersVal = after - before;
+        idleRendersPass = idleRendersVal <= budgets.browser.globeIdleRendersMax;
+      } else { idleRendersVal = 'stats() missing'; }
+    } catch (e) { idleRendersVal = `skipped (${e.message})`; }
+
+    // Compass: sweep longitude in 5deg steps through 360deg at lat 20 and lat 80. Consecutive
+    // northDeg deltas (shortest angular distance) must stay under the max-jump budget, and at
+    // lat 20 (pole nowhere near the view center) the needle should read close to true north.
+    try {
+      const sweep = (lat) => {
+        const out = [];
+        for (let lng = -180; lng <= 180; lng += 5) {
+          stage.setView({ lat, lng, altitude: 2.2 }, 0);
+          out.push(stage.getView().northDeg);
+        }
+        return out;
+      };
+      const maxJump = (arr) => {
+        let m = 0;
+        for (let i = 1; i < arr.length; i++) {
+          const raw = Math.abs(arr[i] - arr[i - 1]);
+          m = Math.max(m, Math.min(raw, 360 - raw));
+        }
+        return m;
+      };
+      const at20 = sweep(20), at80 = sweep(80);
+      const jump20 = maxJump(at20), jump80 = maxJump(at80);
+      const near0At20 = at20.every((v) => Math.min(Math.abs(v), 360 - Math.abs(v)) <= 3);
+      compassVal = `jump20=${jump20.toFixed(1)} jump80=${jump80.toFixed(1)} near0At20=${near0At20}`;
+      compassPass = jump20 <= budgets.browser.compassMaxJumpDegMax && jump80 <= budgets.browser.compassMaxJumpDegMax && near0At20;
+      stage.resetView?.();
+    } catch (e) { compassVal = `skipped (${e.message})`; }
+
+    // Legend: find its toggle by aria-label containing "Legend" (button text/markup is Legend.js's
+    // own choice), open it, confirm the popover dialog is visible, close it, confirm it's hidden again.
+    // Legend.js toggles `hidden` on its role="dialog" popover (not a CSS "open" class) and mirrors
+    // that in aria-expanded on the button, so both signals are checked rather than assuming a class name.
+    try {
+      const legendBtn = [...gWin.document.querySelectorAll('button[aria-label]')]
+        .find((b) => /legend/i.test(b.getAttribute('aria-label') || ''));
+      if (legendBtn) {
+        const isPopoverOpen = () => {
+          const dlg = gWin.document.querySelector('[role="dialog"][aria-label*="egend" i]');
+          return !!dlg && !dlg.hidden;
+        };
+        legendBtn.click();
+        await waitFor(gWin, isPopoverOpen, 3000);
+        const opened = isPopoverOpen() && legendBtn.getAttribute('aria-expanded') === 'true';
+        legendBtn.click();
+        await new Promise((r) => setTimeout(r, 80));
+        const closed = !isPopoverOpen() && legendBtn.getAttribute('aria-expanded') === 'false';
+        legendVal = `opened=${opened} closed=${closed}`;
+        legendPass = opened && closed;
+      } else { legendVal = 'skipped (no legend button yet)'; }
+    } catch (e) { legendVal = `skipped (${e.message})`; }
+
+    // Layers panel: click #btn-layers to lazy-load the registry/LayerManager/LayersPanel, then run
+    // the 6 layer checks from budgets.json's `layers` goals. Captured BEFORE the click so the "no
+    // fetch to a layer host while every layer is off" check can't be polluted by the panel's own
+    // EPIC bonus thumbnail (fetched only once the panel opens, from a nasa.gov subdomain).
+    try {
+      const layerHostRe = /usgs\.gov|eonet\.gsfc\.nasa\.gov|gibs\.earthdata\.nasa\.gov|epic\.gsfc\.nasa\.gov|swpc\.noaa\.gov|who\.int|clinicaltrials\.gov|worldbank\.org|nasa-public-data/i;
+      const layerHostHits = gWin.performance.getEntriesByType('resource').filter((e) => layerHostRe.test(e.name));
+      layersDefaultOnVal = layerHostHits.length;
+      layersDefaultOnPass = layerHostHits.length <= budgets.layers.defaultOnMax;
+
+      const registryMod = await import(new URL('../src/layers/registry.js', import.meta.url).href).catch(() => null);
+      if (registryMod) {
+        const trustRe = /(^|\.)gov(\.[a-z]{2})?$|(^|\.)edu(\.[a-z]{2})?$|(^|\.)ac\.[a-z]{2}$|(^|\.)who\.int$|(^|\.)worldbank\.org$|(^|\.)eumetsat\.int$|(^|\.)esa\.int$/i;
+        const bad = registryMod.LAYERS.filter((l) => !trustRe.test(l.source?.domain || ''));
+        layersTrustVal = bad.length ? `bad=${bad.map((l) => l.id).join(',')}` : 'all official';
+        layersTrustPass = bad.length === 0;
+      } else { layersTrustVal = 'skipped (registry unavailable)'; }
+
+      const btnLayers = gWin.document.getElementById('btn-layers');
+      btnLayers.dispatchEvent(new gWin.Event('click', { bubbles: true }));
+      await waitFor(gWin, () => gWin.__PH__.ui.layers && gWin.__PH__.ui.layersPanel, 8000);
+      const manager = gWin.__PH__.ui.layers;
+
+      // 2. Toggle quakes: handler time budget, then within 10s expect status 'ok' with count > 0
+      // (skip, don't fail, if the live USGS feed is unreachable offline).
+      const quakesSwitch = gWin.document.querySelector('[data-layer-id="quakes"] [role="switch"]');
+      if (quakesSwitch) {
+        gWin.performance.mark('smoke-layer-a');
+        quakesSwitch.dispatchEvent(new gWin.Event('click', { bubbles: true }));
+        gWin.performance.mark('smoke-layer-b');
+        gWin.performance.measure('smoke-layer', 'smoke-layer-a', 'smoke-layer-b');
+        const layerMs = gWin.performance.getEntriesByName('smoke-layer').pop().duration;
+        layersTogglePass = layerMs <= budgets.layers.toggleMsMax;
+        try {
+          await waitFor(gWin, () => manager.state.quakes?.status === 'ok' && manager.state.quakes?.count > 0, 10000);
+          layersToggleVal = `${+layerMs.toFixed(3)}ms, count=${manager.state.quakes.count}`;
+        } catch { layersToggleVal = `${+layerMs.toFixed(3)}ms, skipped (offline)`; }
+      } else { layersToggleVal = 'skipped (no quakes row yet)'; }
+
+      // 3. With quakes + EONET on, the rotation frame p95 stays within the same globe budget.
+      const eonetSwitch = gWin.document.querySelector('[data-layer-id="eonet"] [role="switch"]');
+      if (eonetSwitch && manager.state.quakes?.on) {
+        eonetSwitch.dispatchEvent(new gWin.Event('click', { bubbles: true }));
+        await new Promise((r) => setTimeout(r, 300));
+        let lng2 = -180;
+        const drivenStart2 = gWin.performance.now();
+        await new Promise((resolve) => {
+          (function step() {
+            lng2 = lng2 >= 180 ? -180 : lng2 + 3;
+            stage.setView({ lat: 20, lng: lng2, altitude: 2.2 }, 0);
+            if (gWin.performance.now() - drivenStart2 < 1500) gWin.requestAnimationFrame(step); else resolve();
+          })();
+        });
+        const layersP95 = stage.stats?.().frameP95Ms;
+        layersFrameP95Val = typeof layersP95 === 'number' ? +layersP95.toFixed(2) : 'stats() missing';
+        layersFrameP95Pass = typeof layersP95 !== 'number' || layersP95 <= budgets.browser.globeFrameP95MsMax;
+        stage.resetView?.();
+      } else { layersFrameP95Val = 'skipped (no eonet row, or quakes off)'; }
+
+      // 4. Switching the base to 'base-today' completes a bake within budget (skip if offline: the
+      // GIBS image fetch can fail against a real CDN in CI).
+      const baseTodayRadio = gWin.document.querySelector('[data-layer-id="base-today"] .layer-radio');
+      if (baseTodayRadio) {
+        // A real .click() (synthetic 'click' events don't check a radio); fall back to the manager API.
+        baseTodayRadio.click();
+        if (!manager.state['base-today']?.on) manager.enable('base-today');
+        try {
+          await waitFor(gWin, () => ['ok', 'error'].includes(manager.state['base-today']?.status), 15000);
+          await new Promise((r) => setTimeout(r, 150));
+          const st = manager.state['base-today'];
+          const bakeMs = stage.stats?.().bakeMs;
+          if (st.status === 'ok') {
+            layersBakeVal = typeof bakeMs === 'number' ? +bakeMs.toFixed(1) : 'stats().bakeMs missing';
+            layersBakePass = typeof bakeMs === 'number' && bakeMs <= budgets.layers.bakeMsMax;
+          } else if (!gWin.navigator.onLine) { layersBakeVal = 'skipped (offline)'; }
+          else { layersBakeVal = `error: ${st.error}`; layersBakePass = false; } // online failure is a real failure
+        } catch { layersBakeVal = gWin.navigator.onLine ? 'timeout (15 s) while online' : 'skipped (offline)'; layersBakePass = !gWin.navigator.onLine; }
+      } else { layersBakeVal = 'skipped (no base-today row yet)'; }
+
+      // 5. "Turn all layers off" clears every points layer (base reverts to base-classic, which has
+      // nothing to "clear" since it never produces points).
+      const offBtn = [...gWin.document.querySelectorAll('.layers-panel button')].find((b) => /turn all layers off/i.test(b.textContent || ''));
+      if (offBtn) {
+        offBtn.dispatchEvent(new gWin.Event('click', { bubbles: true }));
+        await new Promise((r) => setTimeout(r, 50));
+        const anyPointLayerOn = registryMod
+          ? Object.entries(manager.state).some(([id, s]) => s.on && registryMod.LAYERS.find((l) => l.id === id)?.render === 'points')
+          : Object.values(manager.state).some((s) => s.on && s.count > 0);
+        layersOffVal = `anyLayerOn=${Object.values(manager.state).filter((s) => s.on).length}`;
+        layersOffPass = !anyPointLayerOn;
+      } else { layersOffVal = 'skipped (no footer button yet)'; }
+    } catch (e) {
+      const skipMsg = `skipped (${e.message})`;
+      if (layersToggleVal === 'skipped') layersToggleVal = skipMsg;
+      if (layersFrameP95Val === 'skipped') layersFrameP95Val = skipMsg;
+      if (layersBakeVal === 'skipped') layersBakeVal = skipMsg;
+      if (layersOffVal === 'skipped') layersOffVal = skipMsg;
+    }
+  } catch { globeState = 'skipped (CDN unreachable)'; markerOk = 'skipped'; poleCountOk = 'skipped'; countryLabelOk = 'skipped'; }
+  record('Globe renders without errors', 'rendered, 0 errors', gErrors.length ? `${gErrors.length} error(s): ${gErrors[0].slice(0, 120)}` : globeState, gErrors.length === 0);
+  record('Globe marker touch target', `>= ${budgets.browser.touchTargetMinPx}px`, markerOk, markerOk === 'skipped' || markerOk === true);
+  record('Globe poles (.ph-pole === 2)', 2, poleCountOk, poleCountOk === 'skipped' || poleCountOk === true);
+  record('Globe country label present (.ph-country-label)', true, countryLabelOk, countryLabelOk === 'skipped' || countryLabelOk === true);
+  record('Globe FPS ratio (driven/idle)', `>= ${budgets.browser.globeFpsRatioMin}`, fpsRatioVal, fpsRatioPass);
+  record('Globe frame p95 (ms)', budgets.browser.globeFrameP95MsMax, frameP95Val, frameP95Pass);
+  record('Globe idle renders growth (1s window, after 1.5s idle)', budgets.browser.globeIdleRendersMax, idleRendersVal, idleRendersPass);
+  record('Compass max jump + |northDeg|<=3 at lat 20', `<=${budgets.browser.compassMaxJumpDegMax}deg`, compassVal, compassPass);
+  record('Legend opens and closes', true, legendVal, legendPass);
+  record('Layers: no fetch to a layer host while every layer is off', budgets.layers.defaultOnMax, layersDefaultOnVal, layersDefaultOnPass);
+  record('Layers: toggle quakes handler (ms), then ok/count>0', budgets.layers.toggleMsMax, layersToggleVal, layersTogglePass);
+  record('Layers: quakes+EONET rotation frame p95 (ms)', budgets.browser.globeFrameP95MsMax, layersFrameP95Val, layersFrameP95Pass);
+  record('Layers: base-today bake time (ms)', budgets.layers.bakeMsMax, layersBakeVal, layersBakePass);
+  record('Layers: "Turn all layers off" clears layer points', true, layersOffVal, layersOffPass);
+  record('Layers: every row’s trust badge domain matches the trust rule', true, layersTrustVal, layersTrustPass);
+
+  // --- List header, grouped search, map settings, event icons + in-app detail photos ---
+  // List header must sit fully below the fixed nav (it used to hide under it).
+  {
+    const th = win.document.querySelector('table.feed thead th');
+    const navBottom = win.document.querySelector('.topbar').getBoundingClientRect().bottom;
+    const top = th?.getBoundingClientRect().top;
+    const ok = typeof top === 'number' && top >= navBottom - 0.5;
+    record('List header visible below the nav', `top >= ${Math.round(navBottom)}px`, top == null ? 'missing' : Math.round(top), ok);
+  }
+  // Grouped search: a broad query returns category sections, and "Show all" expands one in place.
+  {
+    let val = 'error', pass = false;
+    try {
+      win.document.getElementById('btn-search').click();
+      await waitFor(win, () => win.document.querySelector('#search-root .search-input'), 4000);
+      const input = win.document.querySelector('#search-root .search-input');
+      input.value = 'trial';
+      input.dispatchEvent(new win.Event('input', { bubbles: true }));
+      await waitFor(win, () => win.document.querySelectorAll('#search-root .search-group').length >= 2, 4000);
+      const groups = win.document.querySelectorAll('#search-root .search-group').length;
+      const before = win.document.querySelectorAll('#search-root .search-result').length;
+      const showAll = [...win.document.querySelectorAll('#search-root button')].find((b) => /show all/i.test(b.textContent));
+      showAll?.click();
+      await new Promise((r) => setTimeout(r, 100));
+      const after = win.document.querySelectorAll('#search-root .search-result').length;
+      win.document.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      val = `groups=${groups} showAll=${!!showAll} results ${before}->${after}`;
+      pass = groups >= 2 && (!showAll || after > before);
+    } catch (e) { val = `error (${e.message})`; }
+    record('Search groups results by category (+ Show all expands)', 'groups >= 2', val, pass);
+  }
+  // Map settings: the globe gear opens a popover whose Dark mode switch flips <html data-theme>.
+  // Event icons + detail photos: turning on Natural events draws icon markers, and clicking one opens
+  // an in-app sheet whose official satellite photo actually loads. Both skip only when offline.
+  let settingsVal = 'skipped', settingsPass = true, iconsVal = 'skipped', iconsPass = true, photoVal = 'skipped', photoPass = true;
+  try { // settings: its own try so a failure here can neither pass silently nor skip the icon checks
+    const gear = gWin.document.querySelector('.ph-globe-controls [aria-label="Map settings"]');
+    if (gear) {
+      const before = gWin.document.documentElement.dataset.theme;
+      gear.click();
+      await waitFor(gWin, () => gWin.document.querySelector('.ph-settings-popover:not([hidden])'), 8000); // popover module loads on first tap
+      const dark = gWin.document.querySelector('.ph-settings-popover [aria-label="Dark mode"]');
+      dark.click();
+      const flipped = gWin.document.documentElement.dataset.theme !== before;
+      dark.click(); // restore
+      gWin.document.dispatchEvent(new gWin.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      settingsVal = `opened=true flipped=${flipped}`;
+      settingsPass = flipped && gWin.document.documentElement.dataset.theme === before;
+    } else { settingsVal = 'gear button missing'; settingsPass = false; }
+  } catch (e) { settingsVal = `error (${e.message})`; settingsPass = false; }
+  try {
+    const mgr = gWin.__PH__.ui.layers;
+    if (mgr && gWin.navigator.onLine) {
+      mgr.enable('eonet');
+      await waitFor(gWin, () => ['ok', 'error'].includes(mgr.state.eonet?.status), 15000);
+      // Icon glyphs load on first use (eventIcons.js is lazy), so markers appear a moment after 'ok'.
+      if (mgr.state.eonet.status === 'ok') await waitFor(gWin, () => gWin.document.querySelector('.ph-event-icon'), 5000).catch(() => {});
+      const icons = [...gWin.document.querySelectorAll('.ph-event-icon')];
+      iconsVal = `status=${mgr.state.eonet.status} icons=${icons.length}`;
+      iconsPass = mgr.state.eonet.status === 'ok' && icons.length >= 1;
+      if (icons[0]) {
+        icons[0].click();
+        // The test frame sits off-screen, where loading="lazy" images never start; ask for them now.
+        await waitFor(gWin, () => gWin.document.querySelector('.ph-layer-item-card img[src^="http"]'), 10000);
+        for (const img of gWin.document.querySelectorAll('.ph-layer-item-card img')) img.loading = 'eager';
+        await waitFor(gWin, () => [...gWin.document.querySelectorAll('.ph-layer-item-card img')].some((i) => i.complete && i.naturalWidth > 0), 15000);
+        photoVal = 'photo loaded';
+      }
+      mgr.disableAll();
+    }
+  } catch (e) {
+    const online = gWin.navigator.onLine;
+    if (iconsVal === 'skipped') { iconsVal = `error (${e.message})`; iconsPass = !online; }
+    else if (photoVal === 'skipped') { photoVal = `no photo within 15 s (${e.message})`; photoPass = !online; }
+  }
+  // A research-dot click opens ONLY its card (it used to fall through to the country underneath),
+  // and surfaces are exclusive: opening Filters must close the card, never stack two sheets.
+  {
+    let val = 'skipped', pass = true;
+    try {
+      const dot = gWin.document.querySelector('.ph-marker');
+      if (dot) {
+        dot.click();
+        await new Promise((r) => setTimeout(r, 900)); // longer than any fly-to or click fall-through
+        const cardOpen = !!gWin.__PH__.ui.card?.isOpen;
+        const countryOpen = !!gWin.__PH__.ui.country?.isOpen;
+        gWin.document.getElementById('btn-filters').click();
+        await new Promise((r) => setTimeout(r, 100));
+        const cardClosedByFilters = !gWin.__PH__.ui.card?.isOpen;
+        gWin.document.dispatchEvent(new gWin.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        val = `card=${cardOpen} country=${countryOpen} filtersClosedCard=${cardClosedByFilters}`;
+        pass = cardOpen && !countryOpen && cardClosedByFilters;
+      }
+    } catch (e) { val = `error (${e.message})`; pass = false; }
+    record('Research dot opens only its card; one panel at a time', true, val, pass);
+  }
+  record('Map settings gear toggles dark mode', true, settingsVal, settingsPass);
+  record('Natural events draw icon markers', '>= 1', iconsVal, iconsPass);
+  record('Event detail sheet loads an official photo', true, photoVal, photoPass);
+
+  // Sheet gesture (mobile): at 375x812 the Inspector becomes a draggable bottom sheet. Open it via a
+  // list row, then dispatch a pointer drag down on its grabber (.sheet-grabber, per SheetGesture.js)
+  // and expect it to close - dragged down past 25% of the sheet's height, per the spec's release rule.
+  let sheetVal = 'skipped', sheetPass = true;
+  const mFrame = Object.assign(document.createElement('iframe'), { src: '../index.html?view=list' });
+  mFrame.style.width = '375px';
+  mFrame.style.height = '812px';
+  document.body.append(mFrame);
+  try {
+    await frameReady(mFrame);
+    const mWin = mFrame.contentWindow;
+    await waitFor(mWin, () => mWin.__PH__?.engine);
+    await mWin.__PH__.ready;
+    const row = mWin.document.querySelector('table.feed tbody tr');
+    row.focus();
+    row.dispatchEvent(new mWin.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await waitFor(mWin, () => mWin.document.querySelector('.inspector.open'), 4000);
+    const grabber = mWin.document.querySelector('.inspector .sheet-grabber, .sheet-grabber');
+    if (grabber) {
+      const rect = grabber.getBoundingClientRect();
+      const sheetH = mWin.document.querySelector('.inspector').getBoundingClientRect().height || 400;
+      const startX = rect.left + rect.width / 2, startY = rect.top + rect.height / 2;
+      grabber.dispatchEvent(new mWin.PointerEvent('pointerdown', { bubbles: true, clientX: startX, clientY: startY, pointerId: 9 }));
+      const steps = 10;
+      for (let i = 1; i <= steps; i++) {
+        const y = startY + (sheetH * 0.4) * (i / steps); // drag down well past the 25%-of-height close threshold
+        grabber.dispatchEvent(new mWin.PointerEvent('pointermove', { bubbles: true, clientX: startX, clientY: y, pointerId: 9 }));
+      }
+      grabber.dispatchEvent(new mWin.PointerEvent('pointerup', { bubbles: true, clientX: startX, clientY: startY + sheetH * 0.4, pointerId: 9 }));
+      await waitFor(mWin, () => !mWin.document.querySelector('.inspector.open'), 3000);
+      sheetVal = 'closed via grabber drag';
+      sheetPass = true;
+    } else {
+      sheetVal = 'skipped (no .sheet-grabber yet)';
+    }
+  } catch (e) { sheetVal = `skipped (${e.message})`; }
+  record('Sheet gesture: drag grabber down closes the inspector at 375x812', true, sheetVal, sheetPass);
+
+  // console errors + uncaught exceptions
+  record('Console errors', goals.consoleErrorsMax, consoleErrors.length, consoleErrors.length <= goals.consoleErrorsMax);
+
+  const passed = results.every(r => r.pass);
+  document.title = passed ? 'PASS' : `FAIL ${results.filter(r => !r.pass).length}`;
+  window.__SMOKE__ = { passed, results };
+  renderTable(passed);
+}
+
+// Frames may finish loading during the budgets.json fetch, before listeners exist.
+function frameReady(f) {
+  return f.contentDocument?.readyState === 'complete' && f.contentWindow.location.href !== 'about:blank'
+    ? Promise.resolve()
+    : new Promise(r => f.addEventListener('load', r, { once: true }));
+}
+
+// Counts console.error AND uncaught exceptions/rejections (a crash never calls console.error).
+function trapErrors(win, sink) {
+  const realError = win.console.error.bind(win.console);
+  win.console.error = (...args) => { sink.push(args.map(String).join(' ')); realError(...args); };
+  win.addEventListener('error', e => sink.push(String(e.message || e.error)));
+  win.addEventListener('unhandledrejection', e => sink.push(String(e.reason)));
+}
+
+function renderTable(passed) {
+  const tbody = document.querySelector('#results tbody');
+  tbody.replaceChildren();
+  for (const r of results) {
+    const tr = document.createElement('tr');
+    const g = document.createElement('td'); g.textContent = r.name;
+    const m = document.createElement('td'); m.textContent = `${r.measured} (goal ${r.goal})`;
+    const s = document.createElement('td'); s.textContent = r.pass ? 'PASS' : 'FAIL'; s.className = r.pass ? 'pass' : 'fail';
+    tr.append(g, m, s);
+    tbody.appendChild(tr);
+  }
+  document.getElementById('status').textContent = passed ? 'All checks passed' : 'Some checks failed';
+}
+
+run().catch((err) => {
+  document.title = 'FAIL 1';
+  window.__SMOKE__ = { passed: false, results: [{ name: 'runner', goal: 'no throw', measured: String(err), pass: false }] };
+  document.getElementById('status').textContent = 'Smoke check crashed: ' + err.message;
+});
+</script>
+</body>
+</html>

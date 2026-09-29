@@ -1,0 +1,85 @@
+/** THIS FILE DOES: Spotlight-style glass search overlay plus the ph-hl match highlight, ROLE: UI, MAINTAINER NOTE: lazy-injected by SearchPanel.js on first open (same pattern as globe.css); only transform/opacity animate and [data-motion="reduce"] zeroes both transitions below. **/
+
+.search-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:50;
+  opacity:0; pointer-events:none; transition:opacity var(--dur-panel) var(--ease);
+}
+.search-backdrop.open{opacity:1; pointer-events:auto}
+
+.search-panel{
+  position:fixed; z-index:51; left:50%; top:10vh; width:min(600px, calc(100vw - 32px));
+  max-height:min(70vh, 640px); display:flex; flex-direction:column; overflow:hidden;
+  border-radius:16px; box-shadow:var(--shadow);
+  backdrop-filter:blur(24px) saturate(180%); -webkit-backdrop-filter:blur(24px) saturate(180%);
+  background:var(--glass); border:0.5px solid var(--hairline);
+  opacity:0; pointer-events:none;
+  transform:translate3d(-50%,-8px,0) scale(0.98);
+  transition:opacity var(--dur-panel) var(--ease), transform var(--dur-panel) var(--ease);
+}
+.search-panel.open{opacity:1; pointer-events:auto; transform:translate3d(-50%,0,0) scale(1)}
+
+.search-input-row{display:flex; align-items:center; padding:14px 18px; border-bottom:0.5px solid var(--hairline); flex:none}
+.search-input{
+  flex:1; appearance:none; border:0; background:transparent; outline:none; color:var(--text);
+  font:inherit; font-size:19px; font-weight:500; min-width:0;
+}
+.search-input::placeholder{color:var(--text-dim)}
+
+.search-count{padding:8px 18px 0; font-size:12px; color:var(--text-dim); flex:none; min-height:18px}
+
+.search-results{margin:0; padding:6px 8px 10px; overflow-y:auto; flex:1}
+
+.search-group + .search-group{margin-top:12px}
+.search-group-header{
+  display:flex; align-items:center; gap:8px; padding:6px 10px 4px;
+  font-size:11px; font-weight:600; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.02em;
+}
+.search-group-swatch{width:8px; height:8px; border-radius:50%; flex:none}
+.search-group-label{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.search-group-count{font-variant-numeric:tabular-nums}
+.search-group-items{display:flex; flex-direction:column}
+.search-show-all{
+  appearance:none; border:0; background:transparent; color:var(--accent); font:inherit; font-size:12px;
+  font-weight:500; cursor:pointer; padding:6px 10px; margin-top:2px; text-align:left; width:100%; border-radius:8px;
+  transition:background var(--dur-hover) var(--ease);
+}
+.search-show-all:hover, .search-show-all:focus-visible{background:var(--elevated)}
+
+.search-result{padding:10px 10px; border-radius:10px; cursor:pointer}
+.search-result + .search-result{margin-top:2px}
+.search-result.active, .search-result:hover{background:var(--elevated)}
+.search-result-title{font-size:14px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.search-result-meta{display:flex; align-items:center; gap:6px; margin-top:3px; font-size:11px; color:var(--text-dim)}
+.search-sep{opacity:0.6}
+.search-swatch{width:7px; height:7px; border-radius:50%; flex:none}
+.search-result-snippet{
+  margin-top:3px; font-size:12px; color:var(--text-dim); display:-webkit-box;
+  -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden;
+}
+
+.search-empty{padding:36px 24px 40px; text-align:center}
+.search-empty-title{font-size:14px; color:var(--text); font-weight:500}
+.search-empty-tip{margin-top:6px; font-size:12px; color:var(--text-dim)}
+
+mark.ph-hl{background:rgba(255,214,10,0.55); color:inherit; border-radius:3px; padding:0 1px}
+:root[data-theme="dark"] mark.ph-hl{background:rgba(255,214,10,0.38)}
+
+@media (max-width:640px){
+  .search-panel{
+    left:0; top:0; width:100%; height:100%; max-height:none; border-radius:0;
+    transform:translate3d(0,8px,0) scale(1);
+  }
+  .search-panel.open{transform:translate3d(0,0,0) scale(1)}
+  .search-input{font-size:17px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .search-backdrop, .search-panel{transition:none}
+}
+:root[data-motion="reduce"] .search-backdrop,
+:root[data-motion="reduce"] .search-panel{transition:none}
+
+/* Same near-solid glass as the legend/settings/detail cards: the globe texture behind a search
+   panel made results harder to read. */
+:root[data-theme="light"] .search-panel { background: rgba(255, 255, 255, 0.92); }
+:root[data-theme="dark"] .search-panel { background: rgba(28, 28, 30, 0.92); }

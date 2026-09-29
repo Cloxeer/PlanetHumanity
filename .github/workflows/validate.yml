@@ -1,0 +1,16 @@
+# /** THIS FILE DOES: Run validation, unit tests, and performance budgets on every PR and push, ROLE: Automation, MAINTAINER NOTE: Pin action versions to major only; validate blocks merges **/
+name: Validate
+on:
+  pull_request:
+  push:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/validate-shards.mjs
+      - run: node --test "tests/*.test.mjs"
+      - run: node scripts/perf-budget.mjs

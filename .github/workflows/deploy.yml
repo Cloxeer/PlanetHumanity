@@ -1,0 +1,43 @@
+# /** THIS FILE DOES: Validate and deploy to GitHub Pages on push to main, ROLE: Automation, MAINTAINER NOTE: Pages settings must have Source set to GitHub Actions **/
+name: Deploy
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  # Pushes made with GITHUB_TOKEN (the Live data job) don't trigger `push`, so redeploy after it.
+  workflow_run:
+    workflows: [Live data]
+    types: [completed]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/validate-shards.mjs
+      - run: node --test "tests/*.test.mjs"
+      - run: node scripts/perf-budget.mjs
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4

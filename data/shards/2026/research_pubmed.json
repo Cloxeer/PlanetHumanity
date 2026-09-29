@@ -1,0 +1,366 @@
+{ "$comment": "/** THIS FILE DOES: Holds the 2026 shard of verified PubMed biomedical-breakthrough entities for Project Planet Humanity, ROLE: Data, MAINTAINER NOTE: Covers Jan 1 - Sep 25 2026 (run date); re-run esearch with pdat 2026 periodically to add later entries. **/",
+  "schemaVersion": 1,
+  "year": 2026,
+  "entities": [
+    {
+      "id": "pmid-42054679",
+      "title": "Mim8 Bispecific Antibody Prophylaxis in Hemophilia A with or without Inhibitors",
+      "date": "2026-04-30",
+      "category": "rare-disease",
+      "summary": "A twice-monthly injectable antibody protected people with hemophilia A, including those whose disease no longer responds to standard clotting factor treatment, from spontaneous bleeding.",
+      "authors": [
+        "Mancuso ME",
+        "Chan AKC",
+        "Shanmukhaiah C",
+        "Lyu CJ",
+        "Zdziarska J",
+        "Mahlangu J"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "42054679",
+        "doi": "10.1056/NEJMoa2517384"
+      },
+      "institution": {
+        "name": "Department of Biomedical Sciences, Humanitas University",
+        "city": "Pieve Emanuele",
+        "country": "IT",
+        "lat": 45.35,
+        "lng": 9.17
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/42054679/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/42054679/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-42251856",
+      "title": "Cagrilintide-semaglutide (CagriSema) as an add-on to basal insulin in adults with type 2 diabetes (REIMAGINE 3): a randomised, double-blind, placebo-controlled, multicentre, phase 3 study",
+      "date": "2026-06-07",
+      "category": "cardiometabolic",
+      "summary": "Adding a combined GLP-1/amylin drug to insulin markedly improved blood sugar control and weight in people with hard-to-manage type 2 diabetes, pointing to a new class of add-on obesity-diabetes therapy.",
+      "authors": [
+        "Rosenstock J",
+        "Billings LK",
+        "Gajria R",
+        "Giorgino F",
+        "Johansen NB",
+        "Klein KR"
+      ],
+      "authorsTruncated": true,
+      "journal": "Lancet (London, England)",
+      "ids": {
+        "pmid": "42251856",
+        "doi": "10.1016/S0140-6736(26)01022-6"
+      },
+      "institution": {
+        "name": "Division of Endocrinology, University of Texas Southwestern Medical Center",
+        "city": "Dallas",
+        "country": "US",
+        "lat": 32.81,
+        "lng": -96.84
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/42251856/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/42251856/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-42341301",
+      "title": "A Pragmatic Trial of a 6-Month Strategy for Rifampicin-Resistant Tuberculosis",
+      "date": "2026-06-25",
+      "category": "infectious-disease",
+      "summary": "A South African-led trial showed a simpler 6-month all-oral regimen cures drug-resistant tuberculosis as well as longer treatments, making a debilitating disease easier to treat in resource-limited settings.",
+      "authors": [
+        "Conradie F",
+        "Badat T",
+        "Poswa A",
+        "Rajaram S",
+        "Kooverjee S",
+        "Maartens G"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "42341301",
+        "doi": "10.1056/NEJMoa2503687"
+      },
+      "institution": {
+        "name": "Isango Lethemba TB Research Unit, University of the Witwatersrand",
+        "city": "Gqeberha",
+        "country": "ZA",
+        "lat": -33.96,
+        "lng": 25.6
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/42341301/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/42341301/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-42362868",
+      "title": "Re-administration of AAV-mediated gene therapy for OTOF-related deafness: a single-arm trial",
+      "date": "2026-06-26",
+      "category": "regenerative-medicine",
+      "summary": "Chinese researchers safely re-dosed a gene therapy in children born deaf from an OTOF mutation, showing repeat treatment can extend hearing restoration as the effect from a first dose fades.",
+      "authors": [
+        "Fan X",
+        "Zhang L",
+        "Gao Z",
+        "Han L",
+        "Yang P",
+        "Wang D"
+      ],
+      "authorsTruncated": true,
+      "journal": "Nature medicine",
+      "ids": {
+        "pmid": "42362868",
+        "doi": "10.1038/s41591-026-04505-4"
+      },
+      "institution": {
+        "name": "ENT Institute, Eye & ENT Hospital, Fudan University",
+        "city": "Shanghai",
+        "country": "CN",
+        "lat": 31.23,
+        "lng": 121.47
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/42362868/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/42362868/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-42442374",
+      "title": "Multidomain lifestyle intervention for the prevention of cognitive decline in at-risk older adults in Latin America (LatAm-FINGERS): a single-blind, multicentre, randomised controlled trial",
+      "date": "2026-07-13",
+      "category": "neuroscience",
+      "summary": "A large, first-of-its-kind Latin American trial found that a combined diet, exercise, and brain-training program measurably slowed cognitive decline in older adults at risk of dementia.",
+      "authors": [
+        "Crivelli L",
+        "Suemoto CK",
+        "Sosa AL",
+        "Lopera F",
+        "Aguillón D",
+        "Allegri RF"
+      ],
+      "authorsTruncated": true,
+      "journal": "Lancet (London, England)",
+      "ids": {
+        "pmid": "42442374",
+        "doi": "10.1016/S0140-6736(26)01278-X"
+      },
+      "institution": {
+        "name": "Department of Cognitive Neurology, Fleni",
+        "city": "Buenos Aires",
+        "country": "AR",
+        "lat": -34.55,
+        "lng": -58.45
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/42442374/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/42442374/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-42492562",
+      "title": "Oral step-down, optimal drug, and total duration of antibiotic treatment in African children hospitalised with severe community-acquired pneumonia (PediCAP): a factorial randomised controlled trial",
+      "date": "2026-07-23",
+      "category": "public-health",
+      "summary": "A multi-country African trial found children hospitalized with severe pneumonia can safely switch to oral antibiotics sooner and finish shorter courses, easing treatment burden across the region.",
+      "authors": [
+        "Bielicki JA",
+        "Clements M",
+        "Musiime V",
+        "Moore DP",
+        "Sidat M",
+        "Mulenga V"
+      ],
+      "authorsTruncated": true,
+      "journal": "Lancet (London, England)",
+      "ids": {
+        "pmid": "42492562",
+        "doi": "10.1016/S0140-6736(26)00879-2"
+      },
+      "institution": {
+        "name": "Centre for Neonatal and Paediatric Infection, City St George's, University of London",
+        "city": "London",
+        "country": "GB",
+        "lat": 51.43,
+        "lng": -0.17
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/42492562/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/42492562/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-42722888",
+      "title": "A bispecific CD3×CD19 antibody for systemic lupus erythematosus: a phase 1 trial",
+      "date": "2026-09-10",
+      "category": "immunology",
+      "summary": "A Chinese-developed antibody that temporarily links T cells to B cells produced deep remission in lupus patients without the cell-collection process CAR-T therapy requires, hinting at an off-the-shelf alternative.",
+      "authors": [
+        "Xu J",
+        "Mei C",
+        "Guan X",
+        "Du R",
+        "Wu B",
+        "Wu D"
+      ],
+      "authorsTruncated": true,
+      "journal": "Nature medicine",
+      "ids": {
+        "pmid": "42722888",
+        "doi": "10.1038/s41591-026-04572-7"
+      },
+      "institution": {
+        "name": "Department of Rheumatology and Immunology, Union Hospital, Huazhong University of Science and Technology",
+        "city": "Wuhan",
+        "country": "CN",
+        "lat": 30.57,
+        "lng": 114.27
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/42722888/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/42722888/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-42773211",
+      "title": "Large-scale esophageal cancer screening through noncontrast computed tomography and artificial intelligence",
+      "date": "2026-09-22",
+      "category": "ai-in-medicine",
+      "summary": "An AI system reading routine CT scans detected early esophageal cancer at large scale in China, potentially enabling screening in a country where the disease is common but rarely caught early.",
+      "authors": [
+        "Zhou J",
+        "Guo G",
+        "Yao J",
+        "Yu Q",
+        "Zheng C",
+        "Feng X"
+      ],
+      "authorsTruncated": true,
+      "journal": "Nature medicine",
+      "ids": {
+        "pmid": "42773211",
+        "doi": "10.1038/s41591-026-04656-4"
+      },
+      "institution": {
+        "name": "Sun Yat-sen University Cancer Center",
+        "city": "Guangzhou",
+        "country": "CN",
+        "lat": 23.13,
+        "lng": 113.3
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/42773211/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/42773211/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-42777241",
+      "title": "Phase 1 Study of Anito-cel, a d-Domain BCMA CAR T Cell for Refractory or Recurrent Myeloma",
+      "date": "2026-09-24",
+      "category": "oncology",
+      "summary": "An early-phase trial of a redesigned CAR-T cell for multiple myeloma showed strong response rates while reducing the nerve-related side effects that limited earlier BCMA-targeted therapies.",
+      "authors": [
+        "Frigault MJ",
+        "Dhakal B",
+        "Jakubowiak AJ",
+        "Raje N",
+        "Banerjee K",
+        "Mu CJ"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "42777241",
+        "doi": "10.1056/NEJMoa2603527"
+      },
+      "institution": {
+        "name": "Cellular Immunotherapy Program, Mass General Brigham Cancer Institute",
+        "city": "Boston",
+        "country": "US",
+        "lat": 42.36,
+        "lng": -71.07
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/42777241/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/42777241/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-42777242",
+      "title": "Etuvetidigene Autotemcel for the Treatment of Wiskott-Aldrich Syndrome",
+      "date": "2026-09-24",
+      "category": "genomics",
+      "summary": "Gene-corrected stem cell therapy gave children with the rare, life-threatening immune disorder Wiskott-Aldrich syndrome durable immune and platelet function, offering an alternative to donor bone marrow transplant.",
+      "authors": [
+        "Ferrua F",
+        "Cenciarelli S",
+        "Giannelli S",
+        "Galimberti S",
+        "Chandrakasan S",
+        "Fraschetta F"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "42777242",
+        "doi": "10.1056/NEJMoa2515005"
+      },
+      "institution": {
+        "name": "San Raffaele Telethon Institute for Gene Therapy (SR-Tiget)",
+        "city": "Milan",
+        "country": "IT",
+        "lat": 45.5,
+        "lng": 9.26
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/42777242/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/42777242/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    }
+  ]
+}

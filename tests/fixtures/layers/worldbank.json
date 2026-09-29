@@ -1,0 +1,612 @@
+[
+ {
+  "page": 1,
+  "pages": 1,
+  "per_page": 400,
+  "total": 264,
+  "sourceid": null,
+  "lastupdated": "2026-07-13"
+ },
+ [
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "ZH",
+    "value": "Africa Eastern and Southern"
+   },
+   "countryiso3code": "AFE",
+   "date": "2024",
+   "value": 65.3499304660954,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "ZI",
+    "value": "Africa Western and Central"
+   },
+   "countryiso3code": "AFW",
+   "date": "2024",
+   "value": 59.041538008007,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "1A",
+    "value": "Arab World"
+   },
+   "countryiso3code": "ARB",
+   "date": "2024",
+   "value": 72.721805028968,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "S3",
+    "value": "Caribbean small states"
+   },
+   "countryiso3code": "CSS",
+   "date": "2024",
+   "value": 73.3126671321816,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "B8",
+    "value": "Central Europe and the Baltics"
+   },
+   "countryiso3code": "CEB",
+   "date": "2024",
+   "value": 77.918095146168,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "V2",
+    "value": "Early-demographic dividend"
+   },
+   "countryiso3code": "EAR",
+   "date": "2024",
+   "value": 72.0081190674171,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "Z4",
+    "value": "East Asia & Pacific"
+   },
+   "countryiso3code": "EAS",
+   "date": "2024",
+   "value": 76.7378937238629,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "4E",
+    "value": "East Asia & Pacific (excluding high income)"
+   },
+   "countryiso3code": "EAP",
+   "date": "2024",
+   "value": 75.9593161676786,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "T4",
+    "value": "East Asia & Pacific (IDA & IBRD countries)"
+   },
+   "countryiso3code": "TEA",
+   "date": "2024",
+   "value": 75.9869566179365,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "XC",
+    "value": "Euro area"
+   },
+   "countryiso3code": "EMU",
+   "date": "2024",
+   "value": 82.246870032101,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "AF",
+    "value": "Afghanistan"
+   },
+   "countryiso3code": "AFG",
+   "date": "2024",
+   "value": 66.289,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "AL",
+    "value": "Albania"
+   },
+   "countryiso3code": "ALB",
+   "date": "2024",
+   "value": 79.776,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "DZ",
+    "value": "Algeria"
+   },
+   "countryiso3code": "DZA",
+   "date": "2024",
+   "value": 76.475,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "AO",
+    "value": "Angola"
+   },
+   "countryiso3code": "AGO",
+   "date": "2024",
+   "value": 64.805,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "AR",
+    "value": "Argentina"
+   },
+   "countryiso3code": "ARG",
+   "date": "2024",
+   "value": 77.543,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "AM",
+    "value": "Armenia"
+   },
+   "countryiso3code": "ARM",
+   "date": "2024",
+   "value": 78.319512195122,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "AU",
+    "value": "Australia"
+   },
+   "countryiso3code": "AUS",
+   "date": "2024",
+   "value": 83.0512195121951,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "AT",
+    "value": "Austria"
+   },
+   "countryiso3code": "AUT",
+   "date": "2024",
+   "value": 81.9951219512195,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "AZ",
+    "value": "Azerbaijan"
+   },
+   "countryiso3code": "AZE",
+   "date": "2024",
+   "value": 74.576,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BS",
+    "value": "Bahamas, The"
+   },
+   "countryiso3code": "BHS",
+   "date": "2024",
+   "value": 74.71,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BD",
+    "value": "Bangladesh"
+   },
+   "countryiso3code": "BGD",
+   "date": "2024",
+   "value": 74.93,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BY",
+    "value": "Belarus"
+   },
+   "countryiso3code": "BLR",
+   "date": "2024",
+   "value": 74.3653414634147,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BE",
+    "value": "Belgium"
+   },
+   "countryiso3code": "BEL",
+   "date": "2024",
+   "value": 82.3,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BZ",
+    "value": "Belize"
+   },
+   "countryiso3code": "BLZ",
+   "date": "2024",
+   "value": 73.739,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BJ",
+    "value": "Benin"
+   },
+   "countryiso3code": "BEN",
+   "date": "2024",
+   "value": 60.961,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BT",
+    "value": "Bhutan"
+   },
+   "countryiso3code": "BTN",
+   "date": "2024",
+   "value": 73.262,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BO",
+    "value": "Bolivia"
+   },
+   "countryiso3code": "BOL",
+   "date": "2024",
+   "value": 68.739,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BA",
+    "value": "Bosnia and Herzegovina"
+   },
+   "countryiso3code": "BIH",
+   "date": "2024",
+   "value": 78.044,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BW",
+    "value": "Botswana"
+   },
+   "countryiso3code": "BWA",
+   "date": "2024",
+   "value": 69.293,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BR",
+    "value": "Brazil"
+   },
+   "countryiso3code": "BRA",
+   "date": "2024",
+   "value": 76.023,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BN",
+    "value": "Brunei Darussalam"
+   },
+   "countryiso3code": "BRN",
+   "date": "2024",
+   "value": 75.501,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BG",
+    "value": "Bulgaria"
+   },
+   "countryiso3code": "BGR",
+   "date": "2024",
+   "value": 75.7609756097561,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BF",
+    "value": "Burkina Faso"
+   },
+   "countryiso3code": "BFA",
+   "date": "2024",
+   "value": 61.292,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "BI",
+    "value": "Burundi"
+   },
+   "countryiso3code": "BDI",
+   "date": "2024",
+   "value": 63.818,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "KH",
+    "value": "Cambodia"
+   },
+   "countryiso3code": "KHM",
+   "date": "2024",
+   "value": 70.817,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "CM",
+    "value": "Cameroon"
+   },
+   "countryiso3code": "CMR",
+   "date": "2024",
+   "value": 63.968,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "CA",
+    "value": "Canada"
+   },
+   "countryiso3code": "CAN",
+   "date": "2024",
+   "value": 82.1080487804878,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "CF",
+    "value": "Central African Republic"
+   },
+   "countryiso3code": "CAF",
+   "date": "2024",
+   "value": 57.671,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "TD",
+    "value": "Chad"
+   },
+   "countryiso3code": "TCD",
+   "date": "2024",
+   "value": 55.238,
+   "obs_status": "",
+   "decimal": 0
+  },
+  {
+   "indicator": {
+    "id": "SP.DYN.LE00.IN",
+    "value": "Life expectancy at birth, total (years)"
+   },
+   "country": {
+    "id": "CL",
+    "value": "Chile"
+   },
+   "countryiso3code": "CHL",
+   "date": "2024",
+   "value": 81.359,
+   "obs_status": "",
+   "decimal": 0
+  }
+ ]
+]

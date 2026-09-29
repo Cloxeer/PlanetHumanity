@@ -1,0 +1,49 @@
+/** THIS FILE DOES: Styles for LayerItemCard's rich detail sheet body (photo strip, facts grid, summary, links, lightbox), ROLE: UI, MAINTAINER NOTE: Lazy-injected the same way refimage.css is (a <link> appended once on first open); animate opacity/transform only, per repo law. Photo caption+credit always sits BELOW the photo, never overlaid, matching refimage.css's convention; all four photo corners stay rounded (no clipped bottom edge). **/
+
+.ph-layer-detail-body{margin-top:10px; padding-top:10px; border-top:0.5px solid var(--hairline); display:flex; flex-direction:column; gap:12px}
+
+/* ---- shimmer while details() loads ---- */
+.ph-layer-detail-shimmer{display:flex; flex-direction:column; gap:8px}
+.ph-layer-detail-shimmer-row{height:14px; border-radius:6px; background:linear-gradient(90deg, transparent, var(--hairline), transparent); animation:ph-layer-detail-pulse 1.6s ease-in-out infinite}
+.ph-layer-detail-shimmer-row:nth-child(1){width:100%; height:90px; border-radius:12px}
+.ph-layer-detail-shimmer-row:nth-child(2){width:80%}
+.ph-layer-detail-shimmer-row:nth-child(3){width:60%}
+@keyframes ph-layer-detail-pulse{0%,100%{opacity:0.35} 50%{opacity:0.75}}
+@media (prefers-reduced-motion:reduce){.ph-layer-detail-shimmer-row{animation:none; opacity:0.5}}
+
+/* ---- photo strip ---- */
+.ph-layer-detail-photos{display:flex; gap:10px; overflow-x:auto; padding-bottom:2px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch}
+.ph-layer-detail-photo{flex:0 0 auto; width:78%; max-width:260px; display:flex; flex-direction:column; gap:5px; scroll-snap-align:start; appearance:none; background:none; border:0; padding:0; cursor:zoom-in; text-align:left; font:inherit; color:inherit}
+.ph-layer-detail-photo img{
+  display:block; width:100%; aspect-ratio:16/9; border-radius:12px; object-fit:cover;
+  border:0.5px solid var(--hairline); background:var(--elevated);
+}
+.ph-layer-detail-photo-caption{margin:0; padding:0 2px; font-size:0.6875rem; line-height:1.3; color:var(--text-dim)}
+.ph-layer-detail-photo-caption a{color:var(--accent); text-decoration:none}
+.ph-layer-detail-photo-caption a:hover, .ph-layer-detail-photo-caption a:focus-visible{text-decoration:underline}
+
+/* ---- facts grid (2 columns) ---- */
+.ph-layer-detail-facts{display:grid; grid-template-columns:1fr 1fr; gap:8px 12px}
+.ph-layer-detail-fact{display:flex; flex-direction:column; gap:2px; min-width:0}
+.ph-layer-detail-fact-label{font-size:10px; text-transform:uppercase; letter-spacing:0.03em; color:var(--text-dim)}
+.ph-layer-detail-fact-value{font-size:12.5px; color:var(--text); overflow-wrap:break-word}
+
+/* ---- summary ---- */
+.ph-layer-detail-summary{margin:0; font-size:12.5px; line-height:1.45; color:var(--text)}
+
+/* ---- links ---- */
+.ph-layer-detail-links{display:flex; flex-direction:column; gap:6px}
+.ph-layer-detail-link{color:var(--accent); font-size:12px; text-decoration:none}
+.ph-layer-detail-link:hover, .ph-layer-detail-link:focus-visible{text-decoration:underline}
+
+/* ---- lightbox (full-size photo, inside the card, tap/Esc to close) ---- */
+.ph-layer-detail-lightbox{
+  position:absolute; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.85); border-radius:inherit; padding:16px; cursor:zoom-out;
+}
+.ph-layer-detail-lightbox[hidden]{display:none}
+.ph-layer-detail-lightbox img{max-width:100%; max-height:100%; border-radius:10px; object-fit:contain}
+
+@media (prefers-reduced-motion:reduce){
+  .ph-layer-detail-photos{scroll-behavior:auto}
+}

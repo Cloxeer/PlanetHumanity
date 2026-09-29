@@ -1,0 +1,118 @@
+{
+ "studies": [
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT05326334",
+     "briefTitle": "THERApeutic Outcomes Related to Gut microBIOME in Glioblastoma (GBM) Patients Receiving Chemo-radiation (THERABIOME-GBM)"
+    },
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "The Ottawa Hospital Cancer Centre",
+       "city": "Ottawa",
+       "country": "Canada",
+       "geoPoint": {
+        "lat": 45.41117,
+        "lon": -75.69812
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT06584864",
+     "briefTitle": "Bedside Ultrasound on the Effectiveness of Lumbar Puncture in Children."
+    },
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "Medcial Univeristy of Warsaw",
+       "city": "Warsaw",
+       "country": "Poland",
+       "geoPoint": {
+        "lat": 52.22977,
+        "lon": 21.01178
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT06812832",
+     "briefTitle": "Simethicone as Part of ERAS in Bariatric Surgery Patients"
+    },
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "Madigan Army Medical Center",
+       "city": "Tacoma",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 47.25288,
+        "lon": -122.44429
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT05999032",
+     "briefTitle": "The Puerto Rico Asthma Integrated Response Program (\"PR-AIR\")"
+    },
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "Rhode Island Hospital",
+       "city": "Providence",
+       "country": "United States",
+       "geoPoint": {
+        "lat": 41.82399,
+        "lon": -71.41283
+       }
+      },
+      {
+       "facility": "Medial Sciences Campus, University of Puerto Rico",
+       "city": "San Juan",
+       "country": "Puerto Rico",
+       "geoPoint": {
+        "lat": 18.46633,
+        "lon": -66.10572
+       }
+      }
+     ]
+    }
+   }
+  },
+  {
+   "protocolSection": {
+    "identificationModule": {
+     "nctId": "NCT06773832",
+     "briefTitle": "AI in Predicting Polyp Pathology and Endoscopic Classification"
+    },
+    "contactsLocationsModule": {
+     "locations": [
+      {
+       "facility": "Peking Union Medical College Hospital",
+       "city": "Beijing",
+       "country": "China",
+       "geoPoint": {
+        "lat": 39.9075,
+        "lon": 116.39723
+       }
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

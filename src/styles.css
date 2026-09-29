@@ -1,0 +1,355 @@
+/** THIS FILE DOES: Token system (light default + dark), nav/sidebar/timeline layout and the list/inspector/mobile card views, ROLE: UI, MAINTAINER NOTE: Only transform/opacity are animated; [data-motion="reduce"] and prefers-reduced-motion both zero all transitions. Nothing in the timeline HUD may resize/hide as a function of the cursor; the thumb and bubble are transform-only (see note in styles.css line 106). **/
+:root[data-theme="light"]{
+  --bg:#F5F5F7; --surface:#FFFFFF; --elevated:#FFFFFF;
+  --glass:rgba(255,255,255,0.72); --hairline:rgba(0,0,0,0.12);
+  --text:#1D1D1F; --text-dim:#6E6E73; --accent:#0071E3; --shadow:0 8px 32px rgba(0,0,0,0.12);
+}
+:root[data-theme="dark"]{
+  --bg:#000000; --surface:#0A0A0C; --elevated:#1C1C1E;
+  --glass:rgba(28,28,30,0.65); --hairline:rgba(255,255,255,0.12);
+  --text:#F5F5F7; --text-dim:#A1A1A6; --accent:#0A84FF; --shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+:root{
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  --ease:cubic-bezier(.32,.72,0,1); --dur-panel:280ms; --dur-hover:160ms;
+}
+:root[data-motion="reduce"]{ --dur-panel:0ms; --dur-hover:0ms; }
+:root[data-text="large"]{ font-size:112.5%; }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text); font-family:var(--font);
+  -webkit-font-smoothing:antialiased; overflow:hidden;
+}
+.glass{
+  backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%);
+  background:var(--glass); border:0.5px solid var(--hairline);
+}
+
+/* ---------- nav ---------- */
+.topbar{
+  position:fixed; inset:0 0 auto 0; z-index:20; display:grid; grid-template-columns:1fr auto 1fr;
+  align-items:center; gap:8px; padding:8px 16px; padding-top:calc(8px + env(safe-area-inset-top));
+  backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%);
+  background:var(--glass); border-bottom:0.5px solid var(--hairline);
+}
+.topbar-center{display:flex; justify-content:center}
+.topbar h1{font-size:17px; font-weight:600; margin:0}
+.topbar-right{display:flex; justify-content:flex-end; align-items:center; gap:8px}
+.icon-btn{
+  appearance:none; border:0.5px solid transparent; background:transparent; color:var(--text);
+  width:44px; height:44px; min-width:44px; border-radius:10px; display:flex; align-items:center;
+  justify-content:center; cursor:pointer; gap:6px; font:inherit; font-size:13px; padding:0 10px;
+  transition:background var(--dur-hover) var(--ease);
+}
+.icon-btn:hover{background:var(--elevated)}
+.seg-label{display:none}
+.segmented{display:flex; background:var(--elevated); border:0.5px solid var(--hairline); border-radius:12px; padding:2px; gap:2px}
+.segmented button{
+  appearance:none; border:0; background:transparent; color:var(--text-dim); font:inherit; font-size:13px;
+  display:flex; align-items:center; gap:6px; padding:0 12px; height:40px; min-width:44px; border-radius:9px;
+  cursor:pointer; transition:background var(--dur-hover) var(--ease), color var(--dur-hover) var(--ease);
+}
+.segmented button[aria-pressed="true"]{background:var(--surface); color:var(--text); box-shadow:0 0 0 0.5px var(--hairline)}
+.segmented button[aria-disabled="true"]{opacity:0.4; cursor:not-allowed}
+.btn-filters{position:relative; width:auto}
+.filters-badge{position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
+.btn-layers{position:relative; width:auto}
+.layers-badge{position:absolute; top:6px; right:6px; width:8px; height:8px; border-radius:50%; background:var(--accent)}
+.topbar-left{display:flex; align-items:center; justify-content:flex-start}
+/* Desktop: 1fr auto 1fr keeps the title truly centred. Phones: see the override below. */
+@media (max-width:640px){
+  /* Phones: 5 controls + title can't sit around a true centre, so the title takes the middle of
+     whatever space remains and truncates rather than pushing buttons off-screen. */
+  .topbar{grid-template-columns:auto minmax(0,1fr) auto; gap:6px; padding-left:10px; padding-right:10px}
+  .topbar h1{font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .topbar-center{min-width:0}
+  .topbar-left, .topbar-right{gap:2px}
+  .icon-btn{width:40px; min-width:40px; height:40px; padding:0}
+  .segmented button{height:36px; min-width:38px; padding:0 9px}
+}
+/* Very narrow phones: the theme switch is replaced by the Map settings gear (dark mode lives there now). */
+#btn-settings{display:none}
+@media (max-width:420px){ #btn-theme{display:none} #btn-settings{display:flex} }
+@media (min-width:641px){ .seg-label{display:inline} .btn-filters{padding:0 14px 0 12px} .btn-layers{padding:0 14px 0 12px} }
+
+.stage{position:fixed; inset:0; padding-top:60px}
+.globe-root{position:absolute; inset:0}
+.globe-root[hidden]{display:none}
+.list-root{position:absolute; top:var(--nav-h, 60px); right:0; bottom:0; left:0; overflow:auto; padding:8px 16px 140px}
+.skeleton{color:var(--text-dim); text-align:center; margin-top:40px}
+
+/* ---------- feed table ---------- */
+table.feed{width:100%; border-collapse:collapse; font-size:13px}
+table.feed caption{text-align:left; color:var(--text-dim); padding:8px 4px; font-size:12px}
+table.feed th{position:sticky; top:0; background:var(--surface); text-align:left; padding:8px 6px; color:var(--text-dim); font-weight:500; border-bottom:0.5px solid var(--hairline); z-index:1}
+table.feed td{padding:8px 6px; border-bottom:0.5px solid var(--hairline); color:var(--text)}
+table.feed tr.row{cursor:pointer}
+table.feed tr.row:hover td, table.feed tr.row:focus-visible td{background:var(--elevated)}
+.feed-more{color:var(--text-dim); padding:10px 6px; font-size:12px}
+
+/* ---------- timeline HUD ---------- */
+.hud{
+  position:fixed; left:16px; right:16px; bottom:calc(16px + env(safe-area-inset-bottom)); z-index:30;
+  border-radius:16px; padding:10px 14px;
+  backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%);
+  background:var(--glass); border:0.5px solid var(--hairline); box-shadow:var(--shadow);
+}
+.timeline-row{display:flex; align-items:center; gap:12px}
+/* Fixed width: its three labels never change text, so switching range mode can never itself
+   perturb the row layout (same invariant as the jump buttons - see the MAINTAINER NOTE up top). */
+.range-segmented{flex:none; width:216px}
+.range-segmented button{flex:1; padding:0 6px; font-size:12px}
+/* Fixed-width end buttons: their box (min-width/tabular-nums) never changes even though TimelineHUD.js
+   swaps their text with mode/period (date jump labels in All-time, "‹ 2024"/"2026 ›" period-nav labels
+   in Year/Month), so they can never reflow the track. This, plus the removed "Now" pill, eliminates
+   far-right jitter. */
+.timeline-date{
+  appearance:none; border:0; background:none; color:var(--text-dim); font:inherit; font-size:12px;
+  font-variant-numeric:tabular-nums; white-space:nowrap; flex:none; min-width:84px; padding:4px; cursor:pointer;
+  border-radius:6px; transition:color var(--dur-hover) var(--ease), background var(--dur-hover) var(--ease);
+}
+.timeline-date:hover, .timeline-date:focus-visible{color:var(--text); background:var(--elevated)}
+.timeline-date:disabled{opacity:0.35; cursor:not-allowed}
+.timeline-date-newest{text-align:right}
+.timeline-track-wrap{position:relative; flex:1; height:44px}
+.timeline-track{flex:1; outline-offset:4px; border-radius:14px}
+.timeline-canvas{position:absolute; inset:0; width:100%; height:100%; border-radius:14px; opacity:1}
+/* Mode-switch/period-jump crossfade: opacity only, restarted by TimelineHUD.js removing+re-adding
+   this class, so it never touches width/layout - see the MAINTAINER NOTE at the top of this file. */
+.timeline-canvas.timeline-crossfade{animation:timeline-crossfade 160ms ease}
+@keyframes timeline-crossfade{from{opacity:0} to{opacity:1}}
+[data-motion="reduce"] .timeline-canvas.timeline-crossfade{animation:none}
+.timeline-hover-line{position:absolute; top:0; bottom:0; width:1px; background:var(--text-dim); pointer-events:none; opacity:0.6}
+.timeline-tooltip{
+  position:absolute; left:0; bottom:calc(100% + 8px); white-space:nowrap; max-width:min(420px,100%); overflow:hidden; text-overflow:ellipsis;
+  font-size:11px; padding:6px 8px; border-radius:8px; pointer-events:none;
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); background:var(--glass); border:0.5px solid var(--hairline); color:var(--text);
+}
+/* Liquid-glass thumb: a plain DOM rect positioned/scaled via transform ONLY.
+   Its width (22px) and height (52px) are fixed by CSS, never by script, so it cannot itself
+   introduce a layout-feedback loop; TimelineHUD.js insets its own time<->x mapping by this same
+   width so the thumb is clamped inside the track at both ends. */
+.timeline-thumb{
+  position:absolute; top:50%; left:0; width:22px; height:52px; margin-top:-26px; border-radius:11px;
+  pointer-events:none; will-change:transform;
+  backdrop-filter:blur(4px) saturate(180%) brightness(1.08); -webkit-backdrop-filter:blur(4px) saturate(180%) brightness(1.08);
+  background:linear-gradient(180deg, rgba(255,255,255,0.45), rgba(255,255,255,0.12));
+  border:0.5px solid rgba(255,255,255,0.7);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.9), inset 0 -1px 2px rgba(0,0,0,0.12), 0 6px 18px rgba(0,0,0,0.18);
+  transition:transform 220ms var(--ease);
+}
+.timeline-thumb::after{content:""; position:absolute; top:8px; bottom:8px; left:50%; width:2px; margin-left:-1px; background:var(--accent); border-radius:1px}
+.timeline-thumb.dragging{transition:none} /* 1:1 pointer follow while dragging, no easing */
+:root[data-theme="dark"] .timeline-thumb{
+  background:linear-gradient(180deg, rgba(255,255,255,0.32), rgba(255,255,255,0.08));
+  border-color:rgba(255,255,255,0.5);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -1px 2px rgba(0,0,0,0.35), 0 6px 18px rgba(0,0,0,0.4);
+}
+.timeline-bubble{
+  position:absolute; bottom:calc(100% + 8px); left:0; white-space:nowrap; pointer-events:none;
+  font-size:11px; font-weight:500; padding:6px 10px; border-radius:8px; color:#fff; background:var(--accent);
+}
+
+/* ---------- filter sidebar ---------- */
+.filter-backdrop{position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:40; opacity:0; pointer-events:none; transition:opacity var(--dur-panel) var(--ease)}
+.filter-backdrop.open{opacity:1; pointer-events:auto}
+.filter-panel{
+  position:fixed; top:0; right:0; bottom:0; width:min(360px,100vw); z-index:41; display:flex; flex-direction:column;
+  backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%);
+  background:var(--glass); border-left:0.5px solid var(--hairline); box-shadow:var(--shadow);
+  transform:translate3d(100%,0,0); transition:transform var(--dur-panel) var(--ease);
+}
+.filter-panel.open{transform:translate3d(0,0,0)}
+.filter-header{display:flex; align-items:center; justify-content:space-between; padding:16px 16px 8px}
+.filter-header h2{margin:0; font-size:17px}
+.filter-body{flex:1; overflow-y:auto; padding:0 16px 16px}
+.filter-section{margin-top:16px}
+.filter-section h3{font-size:12px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-dim); margin:0 0 8px}
+.source-card{background:var(--surface); border:0.5px solid var(--hairline); border-radius:12px; padding:12px; margin-bottom:12px}
+.source-head{display:flex; align-items:flex-start; justify-content:space-between; gap:8px}
+.source-label{font-size:14px; font-weight:600}
+.source-sublabel{font-size:11px; color:var(--text-dim); margin-top:2px}
+.source-count{font-size:11px; color:var(--text-dim); margin-top:4px}
+.row-links{display:flex; gap:12px; margin:8px 0}
+.link-btn{appearance:none; border:0; background:none; color:var(--accent); font:inherit; font-size:12px; padding:0; cursor:pointer}
+.category-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px}
+.category-row{display:flex; align-items:center; gap:8px; padding:4px 0; cursor:pointer; font-size:13px}
+.swatch{width:10px; height:10px; border-radius:3px; flex:none}
+.category-label{flex:1}
+.category-count{color:var(--text-dim); font-size:12px}
+.display-row{display:flex; align-items:center; justify-content:space-between; padding:8px 0; font-size:13px}
+.switch{
+  appearance:none; border:0.5px solid var(--hairline); background:var(--elevated); width:44px; height:26px;
+  border-radius:999px; position:relative; cursor:pointer; flex:none; transition:background var(--dur-hover) var(--ease);
+}
+.switch::after{
+  content:""; position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,0.3); transition:transform var(--dur-hover) var(--ease);
+}
+.switch[aria-checked="true"]{background:var(--accent)}
+.switch[aria-checked="true"]::after{transform:translate3d(18px,0,0)}
+.switch.indeterminate{background:var(--text-dim)}
+.filter-footer{border-top:0.5px solid var(--hairline); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; gap:8px}
+.filter-showing{font-size:12px; color:var(--text-dim)}
+.btn-secondary{
+  appearance:none; border:0.5px solid var(--hairline); background:var(--elevated); color:var(--text);
+  font:inherit; font-size:13px; padding:8px 14px; border-radius:10px; cursor:pointer;
+}
+
+/* ---------- inspector ---------- */
+.inspector-backdrop{position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:40; opacity:0; pointer-events:none; transition:opacity var(--dur-panel) var(--ease)}
+.inspector-backdrop.open{opacity:1; pointer-events:auto}
+.inspector{
+  position:fixed; top:0; right:0; height:100%; width:min(420px,100%); z-index:41;
+  backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%);
+  background:var(--glass); border-left:0.5px solid var(--hairline); box-shadow:var(--shadow);
+  transform:translate3d(100%,0,0); transition:transform var(--dur-panel) var(--ease); overflow-y:auto; padding:20px;
+}
+.inspector.open{transform:translate3d(0,0,0)}
+.inspector h2{margin:0 0 4px; font-size:19px; padding-right:44px} /* clear the close button */
+.inspector .meta{color:var(--text-dim); font-size:13px; margin:0 0 12px}
+.inspector .summary{font-size:14px; line-height:1.5; margin:0 0 16px}
+.inspector .field{font-size:13px; margin:0 0 8px; color:var(--text-dim)}
+.inspector .field b{color:var(--text); font-weight:500}
+.inspector .links{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap}
+.inspector .links a{
+  color:var(--text); text-decoration:none; font-size:13px; padding:8px 12px; border-radius:10px;
+  background:var(--elevated); border:0.5px solid var(--hairline);
+}
+.inspector-close{
+  position:absolute; top:16px; right:16px; appearance:none; border:0; background:var(--elevated); color:var(--text);
+  width:28px; height:28px; border-radius:50%; cursor:pointer; font-size:14px;
+}
+/* ---------- country panel ---------- */
+.country-backdrop{position:fixed; inset:0; background:rgba(0,0,0,0.35); z-index:40; opacity:0; pointer-events:none; transition:opacity var(--dur-panel) var(--ease)}
+.country-backdrop.open{opacity:1; pointer-events:auto}
+.country-panel{
+  position:fixed; top:0; right:0; bottom:0; width:min(360px,100vw); z-index:41; display:flex; flex-direction:column;
+  backdrop-filter:blur(20px) saturate(180%); -webkit-backdrop-filter:blur(20px) saturate(180%);
+  background:var(--glass); border-left:0.5px solid var(--hairline); box-shadow:var(--shadow);
+  transform:translate3d(100%,0,0); transition:transform var(--dur-panel) var(--ease);
+}
+.country-panel.open{transform:translate3d(0,0,0)}
+.country-header{display:flex; align-items:flex-start; justify-content:space-between; gap:8px; padding:16px 16px 8px}
+.country-heading{display:flex; align-items:center; gap:8px}
+.country-flag{font-size:22px; line-height:1}
+.country-title{margin:0; font-size:17px}
+.country-total{font-size:12px; color:var(--text-dim); margin:2px 0 0}
+.country-body{flex:1; overflow-y:auto; padding:0 16px 16px}
+.country-breakdown{display:flex; height:10px; border-radius:5px; overflow:hidden; margin:8px 0 10px; background:var(--elevated)}
+.country-breakdown-seg{height:100%}
+.country-legend{display:flex; flex-wrap:wrap; gap:8px 14px; margin:0 0 16px; padding:0; list-style:none; font-size:12px; color:var(--text-dim)}
+.country-legend li{display:flex; align-items:center; gap:6px}
+.country-papers{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px}
+.country-paper{
+  display:block; width:100%; text-align:left; appearance:none; border:0; background:none; color:inherit; font:inherit;
+  padding:10px 0; border-bottom:0.5px solid var(--hairline); cursor:pointer;
+}
+.country-paper-meta{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim)}
+.country-paper-title{font-size:13px; margin:2px 0 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.country-paper-inst{font-size:11px; color:var(--text-dim); margin:2px 0 0}
+.country-paper.future{opacity:0.6}
+.country-paper-future-note{font-size:10px; color:var(--text-dim); font-style:italic}
+.country-empty{color:var(--text-dim); font-size:13px; padding:24px 0; text-align:center}
+.country-footer{border-top:0.5px solid var(--hairline); padding:12px 16px; font-size:12px}
+.country-footer a{color:var(--accent); text-decoration:none}
+.country-footer a:hover, .country-footer a:focus-visible{text-decoration:underline}
+@media (max-width:640px){
+  .country-panel{top:auto; bottom:0; right:0; left:0; height:auto; max-height:80%; width:auto; border-left:0; border-top:0.5px solid var(--hairline); border-radius:16px 16px 0 0; transform:translate3d(0,100%,0)}
+  .country-panel.open{transform:translate3d(0,0,0)}
+}
+
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+@media (max-width:640px){
+  .inspector{top:auto; bottom:0; right:0; left:0; height:auto; max-height:80%; width:auto; border-left:0; border-top:0.5px solid var(--hairline); border-radius:16px 16px 0 0; transform:translate3d(0,100%,0)}
+  .inspector.open{transform:translate3d(0,0,0)}
+  .filter-panel{border-radius:0}
+  /* Rows become cards: 5 columns can't fit 375px. Header stays in the a11y tree, visually clipped. */
+  .list-root{padding-bottom:240px}
+  table.feed, table.feed tbody{display:block}
+  table.feed thead{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
+  table.feed tr.row{display:grid; grid-template-columns:auto 1fr auto; gap:2px 8px; padding:10px 4px; border-bottom:0.5px solid var(--hairline)}
+  table.feed tr.row td{padding:0; border:0; background:none}
+  table.feed td:nth-child(1), table.feed td:nth-child(3), table.feed td:nth-child(5){font-size:11px; color:var(--text-dim)}
+  table.feed td:nth-child(2){grid-row:2; grid-column:1/-1; font-size:15px; font-weight:500}
+  table.feed td:nth-child(4){grid-row:3; grid-column:1/-1; font-size:12px; color:var(--text-dim)}
+}
+@media (prefers-reduced-motion:reduce){
+  .inspector, .inspector-backdrop, .filter-panel, .filter-backdrop, .switch, .switch::after, .icon-btn, .segmented button,
+  .timeline-thumb, .country-panel, .country-backdrop{transition:none}
+  .timeline-canvas.timeline-crossfade{animation:none}
+}
+@media (forced-colors:active){
+  .hud, .inspector, .topbar, .filter-panel, .country-panel{background:Canvas; border-color:CanvasText}
+  .switch[aria-checked="true"]{background:Highlight}
+  .timeline-thumb{background:Canvas; border-color:CanvasText}
+}
+
+/* ---------- sheets + flags ---------- */
+
+/* Grabber: hidden on desktop (SheetGesture is a no-op there); on mobile it's the first child of
+   whichever sheet it's attached to (inspector/country-panel/point-card), sticky so scrolling the
+   sheet's own content never carries it out of reach. */
+.sheet-grabber{display:none}
+@media (max-width:640px){
+  .sheet-grabber{
+    display:flex; align-items:center; justify-content:center; width:100%; height:22px;
+    position:sticky; top:0; z-index:5; margin:-4px 0 4px; padding:0; border:0; background:var(--glass);
+    cursor:grab; touch-action:none; -webkit-tap-highlight-color:transparent;
+  }
+  .sheet-grabber-bar{width:36px; height:5px; border-radius:3px; background:var(--text-dim); opacity:0.5}
+  /* No transition while the pointer is dragging - the transform must track 1:1, not ease. */
+  .sheet-dragging{transition:none !important}
+  /* The full detent lets a sheet grow past the normal 80vh mobile cap toward ~92vh. */
+  .inspector.sheet-detent-full, .country-panel.sheet-detent-full{max-height:92%}
+  .ph-point-card.sheet-detent-full{max-height:92vh; overflow-y:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  .sheet-grabber{transition:none}
+}
+
+/* Country panel: the future-paper note reads as an important caveat, not decoration - bold
+   and full-strength text color (overrides the earlier dim/italic declaration above). */
+.country-paper-future-note{font-weight:700; color:var(--text); font-style:normal}
+
+/* A dedicated flag+location line in the inspector, matching the point card's .ph-point-card-loc. */
+.field-location{display:flex; align-items:center; gap:4px; flex-wrap:wrap}
+
+/* Flags: small inline images ahead of a country code or name, everywhere they appear. */
+.ph-flag{vertical-align:middle; margin-right:4px; flex:none}
+.country-flag img.ph-flag{margin-right:0}
+table.feed td .ph-flag{margin-right:6px}
+
+/* Search highlight (set via feed.setHighlight): dim non-matching rows rather than hide them,
+   so the row count and scroll position stay stable while a search is open. */
+tr.row.dim{opacity:0.35}
+
+/* ---------- phone sheet header (inspector) ----------
+   The grabber is a solid sticky strip at the very top of the scrolling sheet, and the close
+   button is pinned inside that strip. Before, the grabber floated over the title with a
+   see-through background and the X scrolled into it. */
+@media (max-width:640px){
+  .inspector{padding-top:0}
+  .inspector .sheet-grabber{
+    top:0; margin:0 -20px 12px; width:calc(100% + 40px); height:36px;
+    background:var(--surface); border-bottom:0.5px solid var(--hairline); border-radius:16px 16px 0 0;
+  }
+  /* Sticky in the sheet's own flow, pulled up into the 36px grabber strip (fixed positioning only
+     held while the sheet was mid-slide). -44px = strip 36 + gap 12 - 4 offset; 16px restores the gap. */
+  .inspector .inspector-close{position:sticky; top:4px; display:block; margin:-44px 0 16px auto; z-index:6}
+}
+
+/* ---------- phone timeline: two compact rows ----------
+   Row 1: [‹ period] [All time | Year | Month] [period ›]; row 2: the full-width bar. The gap
+   between rows is exactly the date bubble's lane, so the HUD shrinks from three rows (~190px) to
+   two (~140px) and the bar keeps its full width for precise scrubbing. Every box here is fixed,
+   so nothing resizes with the cursor (the jitter rule). */
+@media (max-width:640px){
+  .timeline-row{display:grid; grid-template-columns:52px minmax(0,1fr) 52px; grid-template-areas:"old seg new" "track track track"; column-gap:6px; row-gap:34px; align-items:center}
+  .range-segmented{grid-area:seg; width:auto; margin:0}
+  .timeline-date-oldest{grid-area:old; text-align:left}
+  .timeline-date-newest{grid-area:new; text-align:right}
+  .timeline-date{min-width:0; width:52px; padding:2px; font-size:10.5px; line-height:1.15; white-space:normal}
+  .timeline-track{grid-area:track}
+}

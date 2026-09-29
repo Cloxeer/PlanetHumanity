@@ -1,0 +1,480 @@
+{ "$comment": "/** THIS FILE DOES: Holds the 2024 shard of verified PubMed biomedical-breakthrough entities for Project Planet Humanity, ROLE: Data, MAINTAINER NOTE: Every field except summary comes verbatim from NCBI E-utilities (esummary/efetch) - draft new entries with scripts/fetch-pubmed.mjs; summaries are original prose, never pasted abstracts. **/",
+  "schemaVersion": 1,
+  "year": 2024,
+  "entities": [
+    {
+      "id": "pmid-38294972",
+      "title": "Live, Attenuated, Tetravalent Butantan-Dengue Vaccine in Children and Adults",
+      "date": "2024-02-01",
+      "category": "infectious-disease",
+      "summary": "A single-dose, Brazilian-made dengue vaccine protected most recipients regardless of prior dengue exposure, offering an affordable option for the low- and middle-income countries hit hardest by dengue.",
+      "authors": [
+        "Kallás EG",
+        "Cintra MAT",
+        "Moreira JA",
+        "Patiño EG",
+        "Braga PE",
+        "Tenório JCV"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "38294972",
+        "doi": "10.1056/NEJMoa2301790"
+      },
+      "institution": {
+        "name": "Instituto Butantan",
+        "city": "São Paulo",
+        "country": "BR",
+        "lat": -23.57,
+        "lng": -46.72
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/38294972/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/38294972/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-38294975",
+      "title": "CRISPR-Cas9 In Vivo Gene Editing of KLKB1 for Hereditary Angioedema",
+      "date": "2024-02-01",
+      "category": "genomics",
+      "summary": "The first in-body CRISPR gene-editing treatment to durably silence a disease gene in adults with hereditary angioedema, cutting attack rates without repeat dosing.",
+      "authors": [
+        "Longhurst HJ",
+        "Lindsay K",
+        "Petersen RS",
+        "Fijen LM",
+        "Gurugama P",
+        "Maag D"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "38294975",
+        "doi": "10.1056/NEJMoa2309149"
+      },
+      "institution": {
+        "name": "Auckland City Hospital, Department of Immunology",
+        "city": "Auckland",
+        "country": "NZ",
+        "lat": -36.86,
+        "lng": 174.77
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/38294975/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/38294975/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-38310910",
+      "title": "Safety and efficacy of malaria vaccine candidate R21/Matrix-M in African children: a multicentre, double-blind, randomised, phase 3 trial",
+      "date": "2024-02-01",
+      "category": "public-health",
+      "summary": "Large-scale African trial data showing a low-cost, easy-to-manufacture malaria vaccine protects young children, paving the way for its rollout across malaria-endemic countries.",
+      "authors": [
+        "Datoo MS",
+        "Dicko A",
+        "Tinto H",
+        "Ouédraogo JB",
+        "Hamaluba M",
+        "Olotu A"
+      ],
+      "authorsTruncated": true,
+      "journal": "Lancet (London, England)",
+      "ids": {
+        "pmid": "38310910",
+        "doi": "10.1016/S0140-6736(23)02511-4",
+        "pmcid": "PMC7618965"
+      },
+      "institution": {
+        "name": "Jenner Institute, University of Oxford",
+        "city": "Oxford",
+        "country": "GB",
+        "lat": 51.74,
+        "lng": -1.22
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/38310910/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/38310910/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-38684860",
+      "title": "AI-enabled electrocardiography alert intervention and all-cause mortality: a pragmatic randomized clinical trial",
+      "date": "2024-04-29",
+      "category": "ai-in-medicine",
+      "summary": "A hospital-wide randomized trial in Taiwan found that an AI alert flagging high-risk ECGs and prompting doctors to act lowered patient deaths, showing AI screening can save lives in routine care.",
+      "authors": [
+        "Lin CS",
+        "Liu WT",
+        "Tsai DJ",
+        "Lou YS",
+        "Chang CH",
+        "Lee CC"
+      ],
+      "authorsTruncated": true,
+      "journal": "Nature medicine",
+      "ids": {
+        "pmid": "38684860",
+        "doi": "10.1038/s41591-024-02961-4"
+      },
+      "institution": {
+        "name": "Tri-Service General Hospital, National Defense Medical Center",
+        "city": "Taipei",
+        "country": "TW",
+        "lat": 25.08,
+        "lng": 121.58
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/38684860/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/38684860/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-38899695",
+      "title": "A Novel Anti-CD38 Monoclonal Antibody for Treating Immune Thrombocytopenia",
+      "date": "2024-06-20",
+      "category": "immunology",
+      "summary": "A newly designed antibody that clears antibody-producing plasma cells gave lasting platelet recovery to patients with treatment-resistant immune thrombocytopenia in a Chinese trial.",
+      "authors": [
+        "Chen Y",
+        "Xu Y",
+        "Li H",
+        "Sun T",
+        "Cao X",
+        "Wang Y"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "38899695",
+        "doi": "10.1056/NEJMoa2400409"
+      },
+      "institution": {
+        "name": "Institute of Hematology & Blood Diseases Hospital, Chinese Academy of Medical Sciences",
+        "city": "Tianjin",
+        "country": "CN",
+        "lat": 39.13,
+        "lng": 117.2
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/38899695/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/38899695/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-39046157",
+      "title": "Twice-Yearly Lenacapavir or Daily F/TAF for HIV Prevention in Cisgender Women",
+      "date": "2024-07-24",
+      "category": "infectious-disease",
+      "summary": "A twice-yearly injection tested in thousands of young African women nearly eliminated new HIV infections, offering a long-acting prevention option where daily pills are hard to sustain.",
+      "authors": [
+        "Bekker LG",
+        "Das M",
+        "Abdool Karim Q",
+        "Ahmed K",
+        "Batting J",
+        "Brumskine W"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "39046157",
+        "doi": "10.1056/NEJMoa2407001"
+      },
+      "institution": {
+        "name": "Desmond Tutu HIV Centre, University of Cape Town",
+        "city": "Cape Town",
+        "country": "ZA",
+        "lat": -33.94,
+        "lng": 18.46
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39046157/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/39046157/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-39122967",
+      "title": "Antisense oligonucleotide therapy in an individual with KIF1A-associated neurological disorder",
+      "date": "2024-08-09",
+      "category": "rare-disease",
+      "summary": "Doctors designed and manufactured a custom antisense drug for a single child with a rare, severe genetic brain disorder, showing personalized gene-silencing medicine can be made fast enough to help one patient.",
+      "authors": [
+        "Ziegler A",
+        "Carroll J",
+        "Bain JM",
+        "Sands TT",
+        "Fee RJ",
+        "Uher D"
+      ],
+      "authorsTruncated": true,
+      "journal": "Nature medicine",
+      "ids": {
+        "pmid": "39122967",
+        "doi": "10.1038/s41591-024-03197-y",
+        "pmcid": "PMC12010239"
+      },
+      "institution": {
+        "name": "Department of Pediatrics, Columbia University Irving Medical Center",
+        "city": "New York",
+        "country": "US",
+        "lat": 40.84,
+        "lng": -73.94
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39122967/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/39122967/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-39141853",
+      "title": "An Accurate and Rapidly Calibrating Speech Neuroprosthesis",
+      "date": "2024-08-15",
+      "category": "neuroscience",
+      "summary": "A brain implant decoded intended speech from a paralyzed patient with unprecedented accuracy and near-instant calibration, a major step toward restoring natural communication after paralysis.",
+      "authors": [
+        "Card NS",
+        "Wairagkar M",
+        "Iacobacci C",
+        "Hou X",
+        "Singer-Clark T",
+        "Willett FR"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "39141853",
+        "doi": "10.1056/NEJMoa2314132",
+        "pmcid": "PMC11328962"
+      },
+      "institution": {
+        "name": "Department of Neurological Surgery, University of California, Davis",
+        "city": "Davis",
+        "country": "US",
+        "lat": 38.54,
+        "lng": -121.75
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39141853/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/39141853/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-39181597",
+      "title": "Semaglutide and cardiovascular outcomes in patients with obesity and prevalent heart failure: a prespecified analysis of the SELECT trial",
+      "date": "2024-08-24",
+      "category": "cardiometabolic",
+      "summary": "Follow-up analysis of a major obesity trial found semaglutide also lowered cardiovascular events in people who already had heart failure, widening the drug's proven benefits beyond weight loss.",
+      "authors": [
+        "Deanfield J",
+        "Verma S",
+        "Scirica BM",
+        "Kahn SE",
+        "Emerson SS",
+        "Ryan D"
+      ],
+      "authorsTruncated": true,
+      "journal": "Lancet (London, England)",
+      "ids": {
+        "pmid": "39181597",
+        "doi": "10.1016/S0140-6736(24)01498-3"
+      },
+      "institution": {
+        "name": "Institute of Cardiovascular Sciences, University College London",
+        "city": "London",
+        "country": "GB",
+        "lat": 51.52,
+        "lng": -0.13
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39181597/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/39181597/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-39522528",
+      "title": "Induced pluripotent stem-cell-derived corneal epithelium for transplant surgery: a single-arm, open-label, first-in-human interventional study in Japan",
+      "date": "2024-11-07",
+      "category": "regenerative-medicine",
+      "summary": "Japanese surgeons transplanted corneal tissue grown from a patient's own reprogrammed stem cells to restore sight, avoiding the need for scarce donor corneas or immune-suppressing drugs.",
+      "authors": [
+        "Soma T",
+        "Oie Y",
+        "Takayanagi H",
+        "Matsubara S",
+        "Yamada T",
+        "Nomura M"
+      ],
+      "authorsTruncated": true,
+      "journal": "Lancet (London, England)",
+      "ids": {
+        "pmid": "39522528",
+        "doi": "10.1016/S0140-6736(24)01764-1",
+        "pmcid": "PMC11694011"
+      },
+      "institution": {
+        "name": "Department of Ophthalmology, Osaka University Graduate School of Medicine",
+        "city": "Suita",
+        "country": "JP",
+        "lat": 34.82,
+        "lng": 135.52
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39522528/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/39522528/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-39602624",
+      "title": "Twice-Yearly Lenacapavir for HIV Prevention in Men and Gender-Diverse Persons",
+      "date": "2024-11-27",
+      "category": "infectious-disease",
+      "summary": "A twice-yearly injection nearly eliminated new HIV infections among men and gender-diverse people across multiple continents, completing the pair of trials behind the year's biggest HIV prevention breakthrough.",
+      "authors": [
+        "Kelley CF",
+        "Acevedo-Quiñones M",
+        "Agwu AL",
+        "Avihingsanon A",
+        "Benson P",
+        "Blumenthal J"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "39602624",
+        "doi": "10.1056/NEJMoa2411858"
+      },
+      "institution": {
+        "name": "Hope Clinic, Emory University School of Medicine",
+        "city": "Decatur",
+        "country": "US",
+        "lat": 33.77,
+        "lng": -84.3
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39602624/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/39602624/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-39602653",
+      "title": "Obecabtagene Autoleucel in Adults with B-Cell Acute Lymphoblastic Leukemia",
+      "date": "2024-11-27",
+      "category": "oncology",
+      "summary": "A next-generation CAR-T therapy engineered to control its own activity produced high remission rates with fewer severe side effects in adults with an aggressive form of leukemia.",
+      "authors": [
+        "Roddie C",
+        "Sandhu KS",
+        "Tholouli E",
+        "Logan AC",
+        "Shaughnessy P",
+        "Barba P"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "39602653",
+        "doi": "10.1056/NEJMoa2406526",
+        "pmcid": "PMC12818175"
+      },
+      "institution": {
+        "name": "Cancer Institute, University College London",
+        "city": "London",
+        "country": "GB",
+        "lat": 51.52,
+        "lng": -0.13
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39602653/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/39602653/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-39655790",
+      "title": "Lentiviral Gene Therapy with CD34+ Hematopoietic Cells for Hemophilia A",
+      "date": "2024-12-09",
+      "category": "rare-disease",
+      "summary": "An India-developed lentiviral gene therapy using patients' own blood stem cells restored clotting factor production in people with severe hemophilia A, a locally made alternative to costly imported gene therapies.",
+      "authors": [
+        "Srivastava A",
+        "Abraham A",
+        "Aboobacker F",
+        "Singh G",
+        "Geevar T",
+        "Kulkarni U"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "39655790",
+        "doi": "10.1056/NEJMoa2410597",
+        "pmcid": "PMC11875532"
+      },
+      "institution": {
+        "name": "Department of Hematology, Christian Medical College Vellore",
+        "city": "Vellore",
+        "country": "IN",
+        "lat": 12.92,
+        "lng": 79.13
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39655790/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/39655790/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    }
+  ]
+}

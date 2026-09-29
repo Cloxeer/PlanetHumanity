@@ -1,0 +1,811 @@
+/** THIS FILE DOES: Styles for the globe view: markers, country labels/poles/equator, pop/fresh animations, controls stack, compass and the point card, ROLE: UI, MAINTAINER NOTE: Animate only transform/opacity (perf + reduced-motion contract); every animation is disabled under [data-motion="reduce"] or prefers-reduced-motion. **/
+
+.ph-marker {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: auto; /* globe.gl's HTML layer is pointer-events:none; opt markers back in */
+}
+
+.ph-marker.ph-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms var(--ease, ease);
+}
+
+.ph-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--marker-color, #8E8E93);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), var(--shadow, 0 2px 8px rgba(0, 0, 0, 0.3));
+  transform: scale(1);
+  transition: transform 160ms var(--ease, ease);
+}
+
+@media (pointer: coarse) {
+  .ph-dot {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.ph-marker:hover .ph-dot,
+.ph-marker:focus-visible .ph-dot {
+  transform: scale(1.9);
+}
+
+.ph-marker:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+/* ---- search highlight ---- */
+
+.ph-marker.match .ph-dot {
+  box-shadow: 0 0 0 2px rgba(255, 214, 10, 0.95), var(--shadow, 0 2px 8px rgba(0, 0, 0, 0.3));
+}
+
+.ph-marker.dim .ph-dot {
+  opacity: 0.25;
+}
+
+.ph-marker.pop .ph-dot {
+  animation: ph-marker-pop 320ms var(--ease, ease) backwards; /* not 'both': a forwards fill pins scale(1) and kills the hover enlarge */
+}
+
+.ph-marker.fresh .ph-dot::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid var(--marker-color, #8E8E93);
+  animation: ph-fresh-pulse 1800ms ease-out infinite;
+}
+
+.ph-marker.fresh {
+  position: relative;
+}
+
+.ph-marker.fresh .ph-dot {
+  position: relative;
+}
+
+@keyframes ph-marker-pop {
+  from { transform: scale(0); }
+  to { transform: scale(1); }
+}
+
+@keyframes ph-fresh-pulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+[data-motion="reduce"] .ph-marker.pop .ph-dot,
+[data-motion="reduce"] .ph-marker.fresh .ph-dot::after {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-marker.pop .ph-dot,
+  .ph-marker.fresh .ph-dot::after {
+    animation: none;
+  }
+}
+
+/* ---- country labels ---- */
+
+.ph-country-label {
+  pointer-events: none;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #fff;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 4px rgba(0, 0, 0, 0.65);
+}
+
+.ph-country-label.has-papers {
+  font-weight: 700;
+}
+
+.ph-country-label.ph-hidden {
+  opacity: 0;
+}
+
+.ph-country-flag {
+  vertical-align: -1px;
+  margin-right: 3px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.4);
+}
+
+.ph-country-count-pill {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: none;
+  vertical-align: 1px;
+}
+
+/* Google Earth pattern: hide labels (not markers) instantly while dragging, restore 150ms after
+   'end' (see GlobeStage.js onDragEnd). This is a single class toggle on the container, so a drag
+   costs one style recalculation instead of per-frame DOM writes for every visible label. */
+.ph-dragging .ph-country-label,
+.ph-dragging .ph-pole,
+.ph-dragging .ph-equator-label {
+  opacity: 0;
+  transition: none;
+}
+
+/* ---- poles ---- */
+
+.ph-pole {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.ph-pole-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.75);
+}
+
+.ph-pole-caption {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+}
+
+.ph-pole.ph-hidden {
+  opacity: 0;
+}
+
+/* ---- equator label ---- */
+
+.ph-equator-label {
+  pointer-events: none;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgba(255, 214, 10, 0.95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+}
+
+.ph-equator-label.ph-hidden {
+  opacity: 0;
+}
+
+/* ---- layer points hover tooltip ---- */
+
+.ph-layer-tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 22;
+  max-width: 220px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  backdrop-filter: blur(20px) saturate(180%);
+  background: var(--glass);
+  border: 0.5px solid var(--hairline);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.ph-layer-tooltip[hidden] {
+  display: none;
+}
+
+.ph-layer-tooltip-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.ph-layer-tooltip-sub {
+  margin-top: 2px;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+/* ---- object markers (e.g. ISS) ---- */
+
+.ph-object-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #fff;
+  pointer-events: auto; /* globe.gl's HTML layer defaults to pointer-events:none */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ph-object-marker svg {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.85));
+}
+
+.ph-object-marker-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+}
+
+.ph-object-marker.ph-hidden {
+  opacity: 0;
+}
+
+.ph-object-marker:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ---- event icons (natural-event layers: wildfires, storms, quakes...) ---- */
+
+.ph-event-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: auto; /* globe.gl's HTML layer defaults to pointer-events:none */
+}
+
+.ph-event-icon-chip {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--chip-color, #8E8E93);
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 2px 6px rgba(0, 0, 0, 0.4);
+  transform: scale(1);
+  transition: transform 160ms var(--ease, ease);
+}
+
+.ph-event-icon-chip svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ph-event-icon:hover .ph-event-icon-chip,
+.ph-event-icon:focus-visible .ph-event-icon-chip {
+  transform: scale(1.25);
+}
+
+.ph-event-icon:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+.ph-event-icon-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85), 0 0 4px rgba(0, 0, 0, 0.65);
+  white-space: nowrap;
+}
+
+.ph-event-icon-label[hidden] {
+  display: none;
+}
+
+.ph-event-icon.ph-hidden {
+  opacity: 0;
+}
+
+[data-motion="reduce"] .ph-event-icon-chip {
+  transition: none;
+}
+
+/* ---- controls stack ---- */
+
+.ph-globe-controls {
+  position: absolute;
+  right: 16px;
+  bottom: calc(var(--hud-clearance, 120px) + 40px); /* HUD's measured footprint (set by TimelineHUD) + room for its date bubble */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px) saturate(180%);
+  background: var(--glass);
+  border: 0.5px solid var(--hairline);
+  box-shadow: var(--shadow);
+  z-index: 20;
+}
+
+.ph-control-btn {
+  width: 40px;
+  height: 40px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 160ms var(--ease, ease), background 160ms var(--ease, ease);
+}
+
+.ph-control-btn:hover {
+  background: var(--hairline);
+}
+
+.ph-control-btn:active {
+  transform: scale(0.92);
+}
+
+.ph-control-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.ph-compass {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.ph-compass:hover {
+  background: var(--hairline);
+}
+
+.ph-compass:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.ph-compass-needle {
+  display: block;
+  /* No transition: GlobeControls.js writes this transform on every view-change tick, so it must
+     track the globe exactly. A transition here was half of the old "spazzing" bug - it fought the
+     continuous updates and animated the long way around whenever the heading wrapped 359->0deg. */
+  transition: none;
+  transform-origin: 50% 50%;
+}
+
+.ph-compass { position: relative; }
+/* Coordinates ride in a pill to the LEFT of the compass so the 44px stack stays clean. */
+.ph-compass-caption {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  transform: translate3d(0, -50%, 0);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 0.5px solid var(--hairline);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  pointer-events: none;
+}
+
+[data-motion="reduce"] .ph-control-btn {
+  transition: none;
+}
+
+/* ---- legend popover ---- */
+
+.ph-legend {
+  position: absolute;
+  right: calc(100% + 10px);
+  bottom: 0;
+  width: 240px;
+  max-width: calc(100vw - 32px);
+  max-height: min(70vh, 420px);
+  overflow-y: auto;
+  padding: 12px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px) saturate(180%);
+  background: var(--glass);
+  border: 0.5px solid var(--hairline);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  z-index: 25;
+}
+
+.ph-legend[hidden] {
+  display: none;
+}
+
+.ph-legend:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.ph-legend-categories,
+.ph-legend-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ph-legend-categories li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 0.8rem;
+}
+
+.ph-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.ph-legend-label {
+  flex: 1;
+}
+
+.ph-legend-count {
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.ph-legend-divider {
+  border: none;
+  border-top: 0.5px solid var(--hairline);
+  margin: 8px 0;
+}
+
+.ph-legend-section-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+
+.ph-legend-shape-ring {
+  background: transparent !important;
+  border: 2px solid currentColor;
+  box-sizing: border-box;
+}
+
+.ph-legend-shape-swatch {
+  border-radius: 3px;
+}
+
+.ph-legend-gradient {
+  display: block;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  flex: none;
+}
+
+.ph-legend-categories li:has(.ph-legend-gradient) {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+
+.ph-legend-gradient-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.ph-legend-notes li {
+  padding: 3px 0;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+/* ---- map settings popover ---- */
+
+.ph-settings-popover {
+  position: absolute;
+  width: 220px;
+  max-width: calc(100vw - 32px);
+  padding: 12px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px) saturate(180%);
+  background: var(--glass);
+  border: 0.5px solid var(--hairline);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  z-index: 25;
+}
+
+.ph-settings-popover[hidden] {
+  display: none;
+}
+
+.ph-settings-popover:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.ph-settings-left {
+  right: calc(100% + 10px);
+  top: 0; /* the gear is the FIRST button in the stack, so open beside it, not by the compass */
+}
+
+.ph-settings-below {
+  top: calc(100% + 10px);
+  right: 0;
+}
+
+.ph-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 0.85rem;
+}
+
+:root[data-theme="light"] .ph-settings-popover { background: rgba(255, 255, 255, 0.92); }
+:root[data-theme="dark"] .ph-settings-popover { background: rgba(28, 28, 30, 0.92); }
+
+/* ---- mobile control stack ---- */
+
+@media (max-width: 640px) {
+  .ph-globe-controls {
+    bottom: calc(var(--hud-clearance, 200px) + 12px); /* on phones the date bubble sits inside the HUD's own rows */
+    right: 12px;
+    gap: 4px;
+    padding: 4px;
+  }
+
+  /* Visually 40x40 (smaller footprint on a small screen) but the actual click/tap target stays
+     >=44x44: content-box padding grows the button's hit box while background-clip keeps the
+     painted chip at 40x40, so the stack doesn't look oversized. */
+  .ph-control-btn,
+  .ph-compass {
+    box-sizing: content-box;
+    width: 40px;
+    height: 40px;
+    min-width: 0;
+    min-height: 0;
+    padding: 2px;
+    background-clip: content-box;
+  }
+
+  /* No room for a side pill at this width: the caption drops below the compass instead. */
+  .ph-compass {
+    flex-direction: column;
+  }
+
+  .ph-compass-caption {
+    position: static;
+    transform: none;
+    margin-top: 2px;
+    padding: 2px 6px;
+    font-size: 0.625rem;
+  }
+}
+
+/* ---- point card ---- */
+
+.ph-point-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 30;
+  max-width: 300px;
+  padding: 14px;
+  border-radius: 16px;
+  backdrop-filter: blur(20px) saturate(180%);
+  background: var(--glass);
+  border: 0.5px solid var(--hairline);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  opacity: 1;
+  transform-origin: 0 50%;
+  transition: opacity 160ms var(--ease, ease), transform 160ms var(--ease, ease);
+}
+
+.ph-point-card[hidden] {
+  display: none;
+}
+
+.ph-point-card.ph-point-card-enter {
+  opacity: 0;
+  transform: scale(0.9) translate3d(0, 0, 0);
+}
+
+.ph-point-card.ph-point-card-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ph-point-card-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.ph-point-card-close:hover {
+  background: var(--hairline);
+}
+
+.ph-point-card-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 28px;
+}
+
+.ph-point-card-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.ph-point-card-cat {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.ph-point-card-title {
+  margin: 8px 0 4px;
+  font-size: 0.95rem;
+  line-height: 1.3;
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ph-point-card-meta,
+.ph-point-card-inst,
+.ph-point-card-loc {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.ph-point-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.ph-point-card-zoom,
+.ph-point-card-details {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ph-point-card-zoom {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+}
+
+.ph-point-card-details {
+  background: transparent;
+  color: var(--text);
+  border: 0.5px solid var(--hairline);
+}
+
+.ph-point-card-zoom:focus-visible,
+.ph-point-card-details:focus-visible,
+.ph-point-card-close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .ph-point-card {
+    left: 0 !important;
+    right: 0;
+    bottom: calc(var(--hud-clearance, 120px) + 40px); /* HUD's measured footprint (set by TimelineHUD) + room for its date bubble */
+    top: auto !important;
+    max-width: none;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    box-sizing: border-box;
+  }
+}
+
+[data-motion="reduce"] .ph-point-card,
+[data-motion="reduce"] .ph-point-card.ph-point-card-enter {
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-point-card {
+    transition: none;
+  }
+}
+
+/* globe.gl's CSS2D layer writes an inline z-index (up to the element count) on every label/marker for
+   depth sorting. Isolate it so those values can't climb above the card, controls or sheets. */
+#globe-root .scene-container { isolation: isolate; }
+
+/* The card floats over a bright, busy texture: more opaque glass than the chrome keeps text legible. */
+:root[data-theme="light"] .ph-point-card { background: rgba(255, 255, 255, 0.9); }
+:root[data-theme="dark"] .ph-point-card { background: rgba(28, 28, 30, 0.9); }
+
+/* Popovers that float over the busy globe texture need near-solid glass, or country labels read
+   through their text (same treatment as the point card). */
+:root[data-theme="light"] .ph-legend { background: rgba(255, 255, 255, 0.92); }
+:root[data-theme="dark"] .ph-legend { background: rgba(28, 28, 30, 0.92); }

@@ -1,0 +1,71 @@
+{ "$comment": "/** THIS FILE DOES: Defines the strict JSON Schema for one research entity and one yearly shard file, ROLE: Data, MAINTAINER NOTE: Bump to entity.v2 instead of loosening a rule here; scripts/validate-shards.mjs mirrors these rules without dependencies, so keep both in sync. **/",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://humanity-catalog/data/schema/entity.v1.schema.json",
+  "title": "Project Planet Humanity shard (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$comment", "schemaVersion", "year", "entities"],
+  "properties": {
+    "$comment": { "type": "string", "pattern": "^/\\*\\* THIS FILE DOES: .+, ROLE: .+, MAINTAINER NOTE: .+ \\*\\*/$" },
+    "schemaVersion": { "const": 1 },
+    "year": { "type": "integer", "minimum": 1900, "maximum": 2100 },
+    "entities": { "type": "array", "items": { "$ref": "#/$defs/entity" } }
+  },
+  "$defs": {
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "date", "category", "summary", "authors", "authorsTruncated", "journal", "ids", "institution", "sources", "verified"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^pmid-[1-9][0-9]{0,8}$", "description": "Always 'pmid-' + ids.pmid." },
+        "title": { "type": "string", "minLength": 10, "maxLength": 300, "description": "Exact article title as listed on PubMed (titles are factual, not copyrighted prose)." },
+        "date": { "type": "string", "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$", "description": "Publication date (UTC, YYYY-MM-DD). Year must equal the shard year. Use the PubMed 'pubdate'; if only month is known use day 01." },
+        "category": { "enum": ["genomics", "oncology", "neuroscience", "infectious-disease", "immunology", "cardiometabolic", "regenerative-medicine", "public-health", "ai-in-medicine", "rare-disease"] },
+        "summary": { "type": "string", "minLength": 40, "maxLength": 400, "description": "Original plain-language summary written by the maintainer. NEVER paste the abstract (publisher copyright)." },
+        "authors": { "type": "array", "minItems": 1, "maxItems": 6, "items": { "type": "string", "minLength": 2, "maxLength": 80 } },
+        "authorsTruncated": { "type": "boolean", "description": "true when the paper has more authors than listed." },
+        "journal": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "ids": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pmid"],
+          "properties": {
+            "pmid": { "type": "string", "pattern": "^[1-9][0-9]{0,8}$" },
+            "pmcid": { "type": "string", "pattern": "^PMC[0-9]{4,9}$" },
+            "doi": { "type": "string", "pattern": "^10\\.[0-9]{4,9}/\\S+$" }
+          }
+        },
+        "institution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "city", "country", "lat", "lng"],
+          "properties": {
+            "name": { "type": "string", "minLength": 2, "maxLength": 160, "description": "Primary affiliation of the corresponding (else first) author." },
+            "city": { "type": "string", "minLength": 2, "maxLength": 80 },
+            "country": { "type": "string", "pattern": "^[A-Z]{2}$", "description": "ISO 3166-1 alpha-2." },
+            "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+            "lng": { "type": "number", "minimum": -180, "maximum": 180 }
+          }
+        },
+        "sources": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pubmed", "archive"],
+          "properties": {
+            "pubmed": { "type": "string", "pattern": "^https://pubmed\\.ncbi\\.nlm\\.nih\\.gov/[1-9][0-9]{0,8}/$", "description": "Must equal https://pubmed.ncbi.nlm.nih.gov/{ids.pmid}/" },
+            "archive": { "type": "string", "pattern": "^https://web\\.archive\\.org/web/2/https://pubmed\\.ncbi\\.nlm\\.nih\\.gov/[1-9][0-9]{0,8}/$", "description": "Must equal https://web.archive.org/web/2/{sources.pubmed}" }
+          }
+        },
+        "verified": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["method", "date"],
+          "properties": {
+            "method": { "enum": ["ncbi-esummary", "manual"] },
+            "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" }
+          }
+        }
+      }
+    }
+  }
+}

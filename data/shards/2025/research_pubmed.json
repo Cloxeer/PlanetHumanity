@@ -1,0 +1,407 @@
+{ "$comment": "/** THIS FILE DOES: Holds the 2025 shard of verified PubMed biomedical-breakthrough entities for Project Planet Humanity, ROLE: Data, MAINTAINER NOTE: Every field except summary comes verbatim from NCBI E-utilities (esummary/efetch) - draft new entries with scripts/fetch-pubmed.mjs; summaries are original prose, never pasted abstracts. **/",
+  "schemaVersion": 1,
+  "year": 2025,
+  "entities": [
+    {
+      "id": "pmid-39798579",
+      "title": "Durvalumab with or without bevacizumab with transarterial chemoembolisation in hepatocellular carcinoma (EMERALD-1): a multiregional, randomised, double-blind, placebo-controlled, phase 3 study",
+      "date": "2025-01-08",
+      "category": "oncology",
+      "summary": "Adding an immunotherapy drug to a standard liver-tumor-blocking procedure delayed cancer progression in liver cancer patients, offering a new combination strategy for a cancer usually diagnosed too late for surgery.",
+      "authors": [
+        "Sangro B",
+        "Kudo M",
+        "Erinjeri JP",
+        "Qin S",
+        "Ren Z",
+        "Chan SL"
+      ],
+      "authorsTruncated": true,
+      "journal": "Lancet (London, England)",
+      "ids": {
+        "pmid": "39798579",
+        "doi": "10.1016/S0140-6736(24)02551-0",
+        "pmcid": "PMC12282661"
+      },
+      "institution": {
+        "name": "Liver Unit and HPB Oncology Area, Clínica Universidad de Navarra",
+        "city": "Pamplona",
+        "country": "ES",
+        "lat": 42.82,
+        "lng": -1.64
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39798579/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/39798579/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-39879593",
+      "title": "Oral Regimens for Rifampin-Resistant, Fluoroquinolone-Susceptible Tuberculosis",
+      "date": "2025-01-30",
+      "category": "infectious-disease",
+      "summary": "An international trial found a shorter, fully oral drug combination cures a common drug-resistant form of tuberculosis as effectively as older regimens, simplifying treatment in the many countries battling the disease.",
+      "authors": [
+        "Guglielmetti L",
+        "Khan U",
+        "Velásquez GE",
+        "Gouillou M",
+        "Abubakirov A",
+        "Baudin E"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "39879593",
+        "doi": "10.1056/NEJMoa2400327",
+        "pmcid": "PMC7617355"
+      },
+      "institution": {
+        "name": "Médecins Sans Frontières / Sorbonne Université",
+        "city": "Paris",
+        "country": "FR",
+        "lat": 48.85,
+        "lng": 2.35
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39879593/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/39879593/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-40205199",
+      "title": "Plasma phospho-tau217 for Alzheimer's disease diagnosis in primary and secondary care using a fully automated platform",
+      "date": "2025-04-09",
+      "category": "neuroscience",
+      "summary": "A fully automated blood test for a specific tau protein accurately flagged Alzheimer's disease in real-world primary and specialist clinics, offering a scalable way to diagnose the disease without costly brain scans.",
+      "authors": [
+        "Palmqvist S",
+        "Warmenhoven N",
+        "Anastasi F",
+        "Pilotto A",
+        "Janelidze S",
+        "Tideman P"
+      ],
+      "authorsTruncated": true,
+      "journal": "Nature medicine",
+      "ids": {
+        "pmid": "40205199",
+        "doi": "10.1038/s41591-025-03622-w",
+        "pmcid": "PMC12176611"
+      },
+      "institution": {
+        "name": "Clinical Memory Research Unit, Lund University",
+        "city": "Lund",
+        "country": "SE",
+        "lat": 55.7,
+        "lng": 13.19
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/40205199/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/40205199/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-40373211",
+      "title": "Patient-Specific In Vivo Gene Editing to Treat a Rare Genetic Disease",
+      "date": "2025-05-15",
+      "category": "rare-disease",
+      "summary": "Doctors designed, manufactured, and delivered a custom CRISPR base-editing drug to treat a single infant's rare, otherwise fatal urea cycle disorder within months, a milestone for truly individualized gene therapy.",
+      "authors": [
+        "Musunuru K",
+        "Grandinette SA",
+        "Wang X",
+        "Hudson TR",
+        "Briseno K",
+        "Berry AM"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "40373211",
+        "doi": "10.1056/NEJMoa2504747",
+        "pmcid": "PMC12713542"
+      },
+      "institution": {
+        "name": "Children's Hospital of Philadelphia",
+        "city": "Philadelphia",
+        "country": "US",
+        "lat": 39.95,
+        "lng": -75.19
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/40373211/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/40373211/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-40461817",
+      "title": "A generative AI-discovered TNIK inhibitor for idiopathic pulmonary fibrosis: a randomized phase 2a trial",
+      "date": "2025-06-03",
+      "category": "ai-in-medicine",
+      "summary": "An AI system designed a brand-new drug molecule from scratch, which then showed lung-function benefits for pulmonary fibrosis patients in a real clinical trial, one of the first medicines invented by generative AI to work in humans.",
+      "authors": [
+        "Xu Z",
+        "Ren F",
+        "Wang P",
+        "Cao J",
+        "Tan C",
+        "Ma D"
+      ],
+      "authorsTruncated": true,
+      "journal": "Nature medicine",
+      "ids": {
+        "pmid": "40461817",
+        "doi": "10.1038/s41591-025-03743-2",
+        "pmcid": "PMC12353801"
+      },
+      "institution": {
+        "name": "Department of Pulmonary and Critical Care Medicine, Peking Union Medical College Hospital",
+        "city": "Beijing",
+        "country": "CN",
+        "lat": 39.91,
+        "lng": 116.41
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/40461817/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/40461817/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-40757665",
+      "title": "Survival of Transplanted Allogeneic Beta Cells with No Immunosuppression",
+      "date": "2025-08-04",
+      "category": "regenerative-medicine",
+      "summary": "Insulin-producing cells engineered to hide from the immune system survived and functioned in a diabetes patient without any immunosuppressant drugs, a step toward transplantable cell therapies that don't require lifelong immune suppression.",
+      "authors": [
+        "Carlsson PO",
+        "Hu X",
+        "Scholz H",
+        "Ingvast S",
+        "Lundgren T",
+        "Scholz T"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "40757665",
+        "doi": "10.1056/NEJMoa2503822"
+      },
+      "institution": {
+        "name": "Department of Medical Cell Biology, Uppsala University",
+        "city": "Uppsala",
+        "country": "SE",
+        "lat": 59.86,
+        "lng": 17.63
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/40757665/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/40757665/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-40960239",
+      "title": "Orforglipron, an Oral Small-Molecule GLP-1 Receptor Agonist for Obesity Treatment",
+      "date": "2025-09-16",
+      "category": "cardiometabolic",
+      "summary": "The first pill-based GLP-1 weight-loss drug to match injectable options in trials, offering a needle-free, easier-to-manufacture option that could expand obesity treatment access worldwide.",
+      "authors": [
+        "Wharton S",
+        "Aronne LJ",
+        "Stefanski A",
+        "Alfaris NF",
+        "Ciudin A",
+        "Yokote K"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "40960239",
+        "doi": "10.1056/NEJMoa2511774"
+      },
+      "institution": {
+        "name": "McMaster University",
+        "city": "Hamilton",
+        "country": "CA",
+        "lat": 43.26,
+        "lng": -79.92
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/40960239/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/40960239/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-40993243",
+      "title": "Co-infusion of CD19-targeting and BCMA-targeting CAR-T cells for treatment-refractory systemic lupus erythematosus: a phase 1 trial",
+      "date": "2025-09-24",
+      "category": "immunology",
+      "summary": "A Chinese trial combining two CAR-T cell types in one infusion drove drug-free remission in patients with severe, treatment-resistant lupus, expanding evidence that cellular therapy can reset the immune system in autoimmune disease.",
+      "authors": [
+        "Feng J",
+        "Huo D",
+        "Hong R",
+        "Jin X",
+        "Cao H",
+        "Shao M"
+      ],
+      "authorsTruncated": true,
+      "journal": "Nature medicine",
+      "ids": {
+        "pmid": "40993243",
+        "doi": "10.1038/s41591-025-03937-8"
+      },
+      "institution": {
+        "name": "Bone Marrow Transplantation Center, First Affiliated Hospital, Zhejiang University School of Medicine",
+        "city": "Hangzhou",
+        "country": "CN",
+        "lat": 30.26,
+        "lng": 120.16
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/40993243/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/40993243/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-41002250",
+      "title": "Nexiguran Ziclumeran Gene Editing in Hereditary ATTR with Polyneuropathy",
+      "date": "2025-09-25",
+      "category": "genomics",
+      "summary": "A one-time infused CRISPR therapy that permanently silences the faulty gene causing hereditary ATTR amyloidosis improved nerve damage in patients with polyneuropathy, building on earlier heart-disease results.",
+      "authors": [
+        "Gillmore JD",
+        "Gane E",
+        "Täubel J",
+        "Pilebro B",
+        "Echaniz-Laguna A",
+        "Kao J"
+      ],
+      "authorsTruncated": true,
+      "journal": "The New England journal of medicine",
+      "ids": {
+        "pmid": "41002250",
+        "doi": "10.1056/NEJMoa2510209"
+      },
+      "institution": {
+        "name": "National Amyloidosis Centre, University College London, Royal Free Hospital",
+        "city": "London",
+        "country": "GB",
+        "lat": 51.55,
+        "lng": -0.16
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/41002250/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/41002250/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-41207319",
+      "title": "Effectiveness of the RTS,S/AS01(E) malaria vaccine in a real-world setting over 1 year of follow-up after the three-dose primary schedule: an interim analysis of a phase 4 study in Ghana, Kenya, and Malawi",
+      "date": "2025-11-06",
+      "category": "public-health",
+      "summary": "The first real-world, multi-country study of the RTS,S malaria vaccine outside clinical trials, led by Malawian researchers, confirmed the vaccine keeps protecting children from malaria after routine rollout in Africa.",
+      "authors": [
+        "Ndeketa L",
+        "Haine V",
+        "Debois M",
+        "Asante KP",
+        "Agyapong PD",
+        "Kaali S"
+      ],
+      "authorsTruncated": true,
+      "journal": "The Lancet. Global health",
+      "ids": {
+        "pmid": "41207319",
+        "doi": "10.1016/S2214-109X(25)00415-2"
+      },
+      "institution": {
+        "name": "Malawi-Liverpool-Wellcome Research Programme",
+        "city": "Blantyre",
+        "country": "MW",
+        "lat": -15.79,
+        "lng": 35
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/41207319/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/41207319/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    },
+    {
+      "id": "pmid-41396086",
+      "title": "Sacubitril-Valsartan vs Enalapril in Heart Failure Due to Chagas Disease: Primary Results of ANSWER-HF Randomized Trial",
+      "date": "2025-11-09",
+      "category": "cardiometabolic",
+      "summary": "A Brazilian-led trial found a widely used heart-failure drug also benefits patients with Chagas cardiomyopathy, a neglected disease affecting millions across Latin America that drug trials rarely study.",
+      "authors": [
+        "Madrini V Jr",
+        "Souza PVR",
+        "Fernandes F",
+        "Ianni BM",
+        "Martins AS",
+        "Luzuriaga GJ"
+      ],
+      "authorsTruncated": true,
+      "journal": "Journal of the American College of Cardiology",
+      "ids": {
+        "pmid": "41396086",
+        "doi": "10.1016/j.jacc.2025.10.053"
+      },
+      "institution": {
+        "name": "Instituto do Coração (InCor), Universidade de São Paulo",
+        "city": "São Paulo",
+        "country": "BR",
+        "lat": -23.56,
+        "lng": -46.66
+      },
+      "sources": {
+        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/41396086/",
+        "archive": "https://web.archive.org/web/2/https://pubmed.ncbi.nlm.nih.gov/41396086/"
+      },
+      "verified": {
+        "method": "ncbi-esummary",
+        "date": "2026-09-25"
+      }
+    }
+  ]
+}

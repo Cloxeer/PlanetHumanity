@@ -1,0 +1,77 @@
+<!doctype html><!-- /** THIS FILE DOES: App shell for Project Planet Humanity v3, ROLE: UI, MAINTAINER NOTE: Skeleton list content and nav icons ship inline so first paint has text/UI before JS runs; theme defaults to light. Nav layout (Globe/List left, title center, theme+Filters right) uses grid-template-columns 1fr auto 1fr so the title stays centered regardless of viewport width. **/ -->
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F5F5F7">
+<meta name="description" content="Project Planet Humanity: a chronological, geographic catalog of peer-reviewed medical breakthroughs.">
+<title>Project Planet Humanity</title>
+<link rel="stylesheet" href="src/styles.css">
+<link rel="modulepreload" href="src/main.js">
+<link rel="modulepreload" href="src/core/SpatialStore.js">
+<link rel="modulepreload" href="src/core/ChronologyEngine.js">
+<link rel="modulepreload" href="src/ui/categories.js">
+<link rel="modulepreload" href="src/ui/icons.js">
+<link rel="modulepreload" href="src/ui/prefs.js">
+<link rel="modulepreload" href="src/ui/ThemeToggle.js">
+<link rel="modulepreload" href="src/ui/FilterPanel.js">
+<link rel="modulepreload" href="src/ui/PlainFeedFallback.js">
+<link rel="modulepreload" href="src/ui/TimelineHUD.js">
+<link rel="modulepreload" href="src/ui/InspectorModal.js">
+<link rel="modulepreload" href="src/ui/flags.js">
+<link rel="modulepreload" href="src/ui/SheetGesture.js">
+<link rel="preload" as="fetch" crossorigin href="data/shards/manifest.json">
+</head>
+<body>
+<noscript>Project Planet Humanity needs JavaScript enabled to load the catalog of breakthroughs.</noscript>
+<header class="topbar">
+  <div class="topbar-cell topbar-left">
+    <div class="segmented" id="viewtoggle" role="group" aria-label="View">
+      <button type="button" id="btn-view-globe" aria-label="Globe view" aria-pressed="false" aria-disabled="true">
+        <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M2.5 10h15M10 2.5v15"/><path d="M4.2 5.5c1.6 1 4 1.6 5.8 1.6s4.2-.6 5.8-1.6M4.2 14.5c1.6-1 4-1.6 5.8-1.6s4.2.6 5.8 1.6"/></svg>
+        <span class="seg-label">Globe</span>
+      </button>
+      <button type="button" id="btn-view-list" aria-label="List view" aria-pressed="true">
+        <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 5h9M7 10h9M7 15h9"/><path d="M4 5h.01M4 10h.01M4 15h.01"/></svg>
+        <span class="seg-label">List</span>
+      </button>
+    </div>
+    <button type="button" id="btn-search" class="icon-btn" aria-label="Search">
+      <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6"/><path d="M13.2 13.2l4.3 4.3"/></svg>
+    </button>
+  </div>
+  <div class="topbar-cell topbar-center"><h1>Planet Humanity</h1></div>
+  <div class="topbar-cell topbar-right">
+    <button type="button" id="btn-theme" class="icon-btn" aria-label="Switch to dark mode">
+      <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 12.3A6.8 6.8 0 1 1 7.7 3.5a5.6 5.6 0 0 0 8.8 8.8Z"/></svg>
+    </button>
+    <button type="button" id="btn-settings" class="icon-btn" aria-label="Map settings">
+      <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="10" r="2.8"/><path d="M10 2.2v2.4M10 15.4v2.4M2.2 10h2.4M15.4 10h2.4M4.6 4.6l1.7 1.7M13.7 13.7l1.7 1.7M4.6 15.4l1.7-1.7M13.7 6.3l1.7-1.7"/></svg>
+    </button>
+    <button type="button" id="btn-layers" class="icon-btn btn-layers" aria-label="Layers" aria-haspopup="dialog" aria-expanded="false">
+      <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="9" height="9" rx="1.5"/><rect x="8.5" y="8.5" width="9" height="9" rx="1.5"/></svg>
+      <span class="seg-label">Layers</span>
+      <span id="layers-badge" class="layers-badge" hidden></span>
+    </button>
+    <button type="button" id="btn-filters" class="icon-btn btn-filters" aria-label="Filters" aria-haspopup="dialog" aria-expanded="false">
+      <svg viewBox="0 0 20 20" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h14M6 10h8M8.5 15h3"/></svg>
+      <span class="seg-label">Filters</span>
+      <span id="filters-badge" class="filters-badge" hidden></span>
+    </button>
+  </div>
+</header>
+<main id="stage" class="stage">
+  <div id="globe-root" class="globe-root" hidden></div>
+  <div id="list-root" class="list-root">
+    <p class="skeleton">Loading PubMed breakthroughs&hellip;</p>
+  </div>
+</main>
+<div id="hud-root"></div>
+<div id="inspector-root"></div>
+<div id="filter-root"></div>
+<div id="layers-root"></div>
+<div id="country-root"></div>
+<div id="search-root"></div>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
