@@ -396,3 +396,5 @@ Done. You're live.
 - **Hover under overlays:** only pointer moves whose target is the WebGL `<canvas>` count as map hover; cards, controls and markers inside the globe container must not tint countries.
 - **Worldview Snapshots BBOX is latitude-first** in EPSG:4326 (`south,west,north,east`). Longitude-first requests an invalid latitude, and NASA returns an all-black image. This is locked by `tests/layers.test.mjs`.
 - **Smoke test frames sit off-screen,** so `loading="lazy"` images never start there. The test switches detail photos to eager before waiting for them. Checks that hit the network count as "skipped" only when `navigator.onLine` is false; any other error is a failure.
+
+- **Favicons:** `favicon.ico` (16/32/48, all browsers), `assets/icons/favicon.svg` (modern tabs), `apple-touch-icon.png` (iOS), `manifest.webmanifest` (Android/PWA). Regenerate PNG/ICO with `python scripts/build-icons.py` (Pillow) after editing the SVG; `tests/icons.test.mjs` guards them. Links must stay relative (Pages serves from /PlanetHumanity/, so the browser's default /favicon.ico lookup would miss).
